@@ -10,7 +10,7 @@ defmodule WippliBackendWeb.Router do
 
     resources "/songs", SongController, except: [:new, :edit]
     resources "/users", UserController, except: [:new, :edit]
-    resources "/zones", ZoneController, except: [:new, :edit]
+    resources "/zones", ZoneController
     resources "/playlist_songs", PlaylistSongController, except: [:new, :edit]
     resources "/votes", VoteController, except: [:new, :edit]
   end

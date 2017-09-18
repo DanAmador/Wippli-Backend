@@ -7,7 +7,7 @@ defmodule WippliBackend.Accounts.User do
   schema "users" do
     field :phone, :string
     field :telegram_id, :string
-
+    belongs_to :zones, WippliBackend.Wippli.Zone
     timestamps()
   end
 
@@ -16,5 +16,6 @@ defmodule WippliBackend.Accounts.User do
     user
     |> cast(attrs, [:phone, :telegram_id])
     |> validate_required([:phone, :telegram_id])
+    |> unique_constraint([:phone, :telegram_id])
   end
 end

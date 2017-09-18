@@ -13,6 +13,7 @@ defmodule WippliBackendWeb.UserView do
   def render("user.json", %{user: user}) do
     %{id: user.id,
       phone: user.phone,
-      telegram_id: user.telegram_id}
+      telegram_id: user.telegram_id,
+    updated_at: user.updated_at}
   end
 end
