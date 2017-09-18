@@ -7,5 +7,11 @@ defmodule WippliBackendWeb.Router do
 
   scope "/api", WippliBackendWeb do
     pipe_through :api
+
+    resources "/songs", SongController, except: [:new, :edit]
+    resources "/users", UserController, except: [:new, :edit]
+    resources "/zones", ZoneController, except: [:new, :edit]
+    resources "/playlist_songs", PlaylistSongController, except: [:new, :edit]
+    resources "/votes", VoteController, except: [:new, :edit]
   end
 end
