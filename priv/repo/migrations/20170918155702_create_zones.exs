@@ -4,7 +4,6 @@ defmodule WippliBackend.Repo.Migrations.CreateZones do
   def change do
     create table(:zones) do
       add :password, :string
-
       timestamps()
     end
 

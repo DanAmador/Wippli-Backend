@@ -7,7 +7,8 @@ defmodule WippliBackend.Accounts.User do
   schema "users" do
     field :phone, :string
     field :telegram_id, :string
-    belongs_to :zones, WippliBackend.Wippli.Zone
+    #has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_zone
+    belongs_to :zone, WippliBackend.Wippli.Zone
     timestamps()
   end
 
