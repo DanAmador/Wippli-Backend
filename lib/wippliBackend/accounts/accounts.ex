@@ -35,7 +35,9 @@ defmodule WippliBackend.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def preload_zones!(user) do Repo.preload(user, :zones) end
+  def get_user!(id) do Repo.get!(User, id) end
+
 
   @doc """
   Creates a user.
@@ -101,4 +103,6 @@ defmodule WippliBackend.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
+
+
 end

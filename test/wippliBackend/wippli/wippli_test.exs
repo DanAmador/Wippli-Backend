@@ -248,4 +248,62 @@ defmodule WippliBackend.WippliTest do
       assert %Ecto.Changeset{} = Wippli.change_playlist_song(playlist_song)
     end
   end
+
+  describe "participant" do
+    alias WippliBackend.Wippli.Participants
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def participants_fixture(attrs \\ %{}) do
+      {:ok, participants} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Wippli.create_participants()
+
+      participants
+    end
+
+    test "list_participant/0 returns all participant" do
+      participants = participants_fixture()
+      assert Wippli.list_participant() == [participants]
+    end
+
+    test "get_participants!/1 returns the participants with given id" do
+      participants = participants_fixture()
+      assert Wippli.get_participants!(participants.id) == participants
+    end
+
+    test "create_participants/1 with valid data creates a participants" do
+      assert {:ok, %Participants{} = participants} = Wippli.create_participants(@valid_attrs)
+    end
+
+    test "create_participants/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Wippli.create_participants(@invalid_attrs)
+    end
+
+    test "update_participants/2 with valid data updates the participants" do
+      participants = participants_fixture()
+      assert {:ok, participants} = Wippli.update_participants(participants, @update_attrs)
+      assert %Participants{} = participants
+    end
+
+    test "update_participants/2 with invalid data returns error changeset" do
+      participants = participants_fixture()
+      assert {:error, %Ecto.Changeset{}} = Wippli.update_participants(participants, @invalid_attrs)
+      assert participants == Wippli.get_participants!(participants.id)
+    end
+
+    test "delete_participants/1 deletes the participants" do
+      participants = participants_fixture()
+      assert {:ok, %Participants{}} = Wippli.delete_participants(participants)
+      assert_raise Ecto.NoResultsError, fn -> Wippli.get_participants!(participants.id) end
+    end
+
+    test "change_participants/1 returns a participants changeset" do
+      participants = participants_fixture()
+      assert %Ecto.Changeset{} = Wippli.change_participants(participants)
+    end
+  end
 end

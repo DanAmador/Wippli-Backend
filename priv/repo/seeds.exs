@@ -9,13 +9,14 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-user = %WippliBackend.Accounts.User{phone: "+525542918039"} 
-zone = %WippliBackend.Wippli.Zone{password: "fuck" }
-
-WippliBackend.Repo.insert!(zone)
-
-zoneRel = WippliBackend.Wippli.get_zone!(1)
-assoc = Ecto.build_assoc(zoneRel, :users, phone: "+525542918039")
 
 
-WippliBackend.Repo.insert!(assoc)
+#Created user and make said user create a zone 
+
+%WippliBackend.Accounts.User{phone: "+525542918039"} |> WippliBackend.Repo.insert!
+%WippliBackend.Accounts.User{phone: "+fuck"} |> WippliBackend.Repo.insert!
+
+
+WippliBackend.Accounts.get_user!(1) |> Ecto.build_assoc(:zones, password: "fuck") |> WippliBackend.Repo.insert!
+WippliBackend.Accounts.get_user!(1) |> Ecto.build_assoc(:zones, password: "second zone") |> WippliBackend.Repo.insert!
+#Create a second user and add him as a participant 

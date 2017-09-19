@@ -8,5 +8,7 @@ defmodule WippliBackend.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
+    create unique_index(:users, :phone, name: :phone_not_unique)
+
   end
 end

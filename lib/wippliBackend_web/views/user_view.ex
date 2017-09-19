@@ -1,7 +1,7 @@
 defmodule WippliBackendWeb.UserView do
   use WippliBackendWeb, :view
   alias WippliBackendWeb.UserView
-
+  alias WippliBackendWeb.ZoneView
   def render("index.json", %{users: users}) do
     %{data: render_many(users, UserView, "user.json")}
   end
@@ -14,7 +14,7 @@ defmodule WippliBackendWeb.UserView do
     %{id: user.id,
       phone: user.phone,
       telegram_id: user.telegram_id,
-      zone_id: user.zone_id,
+      created_zones: render_many(user.zones, ZoneView, "zone.json"),
     updated_at: user.updated_at}
   end
 end
