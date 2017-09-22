@@ -72,6 +72,7 @@ defmodule WippliBackend.WippliTest do
   describe "zones" do
     alias WippliBackend.Wippli.Zone
 
+    @user_rel %WippliBackend.Accounts.User{phone: "5555555555", id: 1}
     @valid_attrs %{password: "some password"}
     @update_attrs %{password: "some updated password"}
     @invalid_attrs %{password: nil}
@@ -80,7 +81,7 @@ defmodule WippliBackend.WippliTest do
       {:ok, zone} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Wippli.create_zone()
+        |> Wippli.create_zone(@user_rel)
 
       zone
     end
@@ -96,24 +97,24 @@ defmodule WippliBackend.WippliTest do
     end
 
     test "create_zone/1 with valid data creates a zone" do
-      assert {:ok, %Zone{} = zone} = Wippli.create_zone(@valid_attrs)
+      assert {:ok, %Zone{} = zone} = Wippli.create_zone(@valid_attrs,@user_rel)
       assert zone.password == "some password"
     end
 
     test "create_zone/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Wippli.create_zone(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Wippli.create_zone(@invalid_attrs, @user_rel)
     end
 
     test "update_zone/2 with valid data updates the zone" do
       zone = zone_fixture()
-      assert {:ok, zone} = Wippli.update_zone(zone, @update_attrs)
+      assert {:ok, zone} = Wippli.update_zone(zone, @update_attrs, @user_rel)
       assert %Zone{} = zone
       assert zone.password == "some updated password"
     end
 
     test "update_zone/2 with invalid data returns error changeset" do
       zone = zone_fixture()
-      assert {:error, %Ecto.Changeset{}} = Wippli.update_zone(zone, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Wippli.update_zone(zone, @invalid_attrs, @user_rel)
       assert zone == Wippli.get_zone!(zone.id)
     end
 

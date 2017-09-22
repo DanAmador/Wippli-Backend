@@ -36,6 +36,8 @@ defmodule WippliBackendWeb.Endpoint do
     key: "_wippliBackend_key",
     signing_salt: "gJNee5C5"
 
+
+  plug CORSPlug
   plug WippliBackendWeb.Router
 
   @doc """

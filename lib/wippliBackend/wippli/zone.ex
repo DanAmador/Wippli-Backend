@@ -11,7 +11,7 @@ defmodule WippliBackend.Wippli.Zone do
   end
 
   @doc false
-  def changeset(%Zone{} = zone, attrs, user) do
+  def changeset(%Zone{} = zone, attrs, user \\ %{}) do
     zone
     |> cast(attrs, [:password])
     |> validate_required([:password])
