@@ -20,7 +20,7 @@ defmodule WippliBackendWeb.UserController do
     end
   end
 
-
+  
   def show(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
     render(conn, user: user)

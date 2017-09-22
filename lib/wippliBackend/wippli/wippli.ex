@@ -8,7 +8,6 @@ defmodule WippliBackend.Wippli do
   alias WippliBackend.Wippli.Participant
 
   def create_participant(zone, user) do
-IO.puts("fuck this retarded bullshit")
     attrs = %{zone: zone, user: user}
     %Participant{}
     |> Participant.changeset(attrs)
