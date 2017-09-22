@@ -13,10 +13,5 @@
 
 #Created user and make said user create a zone 
 
-%WippliBackend.Accounts.User{phone: "+525542918039"} |> WippliBackend.Repo.insert!
-%WippliBackend.Accounts.User{phone: "+fuck"} |> WippliBackend.Repo.insert!
+%WippliBackend.Accounts.User{phone: "fuck this shit"} |> WippliBackend.Repo.insert!
 
-
-WippliBackend.Accounts.get_user!(1) |> Ecto.build_assoc(:zones, password: "fuck") |> WippliBackend.Repo.insert!
-WippliBackend.Accounts.get_user!(1) |> Ecto.build_assoc(:zones, password: "second zone") |> WippliBackend.Repo.insert!
-#Create a second user and add him as a participant 

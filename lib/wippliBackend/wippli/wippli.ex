@@ -145,9 +145,9 @@ defmodule WippliBackend.Wippli do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_zone(attrs \\ %{}) do
+  def create_zone(attrs \\ %{},user) do
     %Zone{}
-    |> Zone.changeset(attrs)
+    |> Zone.changeset(attrs,user)
     |> Repo.insert()
   end
 
@@ -163,9 +163,9 @@ defmodule WippliBackend.Wippli do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_zone(%Zone{} = zone, attrs) do
+  def update_zone(%Zone{} = zone, attrs, user) do
     zone
-    |> Zone.changeset(attrs)
+    |> Zone.changeset(attrs, user)
     |> Repo.update()
   end
 

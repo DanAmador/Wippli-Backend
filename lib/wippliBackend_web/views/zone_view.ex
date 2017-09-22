@@ -12,6 +12,7 @@ defmodule WippliBackendWeb.ZoneView do
 
   def render("zone.json", %{zone: zone}) do
     %{id: zone.id,
-      password: zone.password}
+      password: zone.password,
+      created_at: zone.inserted_at}
   end
 end

@@ -11,6 +11,8 @@ defmodule WippliBackend.Accounts.User do
     has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_by
     timestamps()
   end
+
+
   @required_fields ~w(phone)
   @optional_fields ~w(telegram_id)
   @doc false

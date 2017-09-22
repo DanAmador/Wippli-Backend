@@ -11,9 +11,10 @@ defmodule WippliBackend.Wippli.Zone do
   end
 
   @doc false
-  def changeset(%Zone{} = zone, attrs) do
+  def changeset(%Zone{} = zone, attrs, user) do
     zone
     |> cast(attrs, [:password])
     |> validate_required([:password])
+    |> Ecto.Changeset.put_assoc(:user, user)
   end
 end
