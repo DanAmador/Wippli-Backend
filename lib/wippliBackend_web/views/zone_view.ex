@@ -14,8 +14,7 @@ defmodule WippliBackendWeb.ZoneView do
   def render("zone_with_participants.json", %{zone: zone }) do
     %{id: zone.id,
       password: zone.password,
-      #shit: zone,
-      participants: render_many(zone.participants, ParticipantView, "index.json"),     
+      participants: render_many(zone.participants, ParticipantView, "users_in_zone.json", as: :participants),
       updated_at: zone.updated_at}
   end
 

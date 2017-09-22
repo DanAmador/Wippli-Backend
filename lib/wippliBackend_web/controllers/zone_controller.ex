@@ -24,7 +24,7 @@ defmodule WippliBackendWeb.ZoneController do
 
   def show(conn, %{"id" => id}) do
     zone = Wippli.get_zone!(id)
-    render(conn, "show.json", zone: zone)
+    render(conn, "zone_with_participants.json", zone: zone)
   end
 
   def delete(conn, %{"id" => id }) do
