@@ -1,13 +1,10 @@
-defmodule WippliBackend.Wippli.Participants do
+defmodule WippliBackend.Wippli.Participant do  
   use Ecto.Schema
   import Ecto.Changeset
-  alias WippliBackend.Wippli.Participants
+  alias WippliBackend.Wippli.Participant
 
-
-  schema "participant" do
-    field :user_id, :id
-    field :zone_id, :id
-
+  schema "participants" do
+    belongs_to :user, WippliBackend.Accounts.User
     timestamps()
   end
 
@@ -16,7 +13,7 @@ defmodule WippliBackend.Wippli.Participants do
     participants
     |> cast(attrs, [])
     |> validate_required([])
-    |> Ecto.Changeset.put_assoc(:zone, attrs.zone)
     |> Ecto.Changeset.put_assoc(:user, attrs.user)
+    # |> Ecto.Changeset.put_assoc(:zone, attrs.zone)
   end
 end

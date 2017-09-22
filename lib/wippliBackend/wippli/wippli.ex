@@ -14,7 +14,7 @@ defmodule WippliBackend.Wippli do
 
   def get_participant_in_zone(zone_id) do
     Repo.get!(Zone, zone_id)
-    |> Repo.preload(:users)
+    |> Repo.preload(:participants)
   end
   alias WippliBackend.Wippli.Song
   @doc """
@@ -124,7 +124,7 @@ defmodule WippliBackend.Wippli do
 
   """
   def list_zones do
-    Repo.all(Zone)
+    Repo.all(Zone) |> Repo.preload(:participants)
   end
 
   @doc """
@@ -141,8 +141,9 @@ defmodule WippliBackend.Wippli do
       ** (Ecto.NoResultsError)
 
   """
-  def get_zone!(id), do: Repo.get!(Zone, id)
-
+  def get_zone!(id) do
+    Repo.get!(Zone, id) |> Repo.preload(:participants)
+  end
   @doc """
   Creates a zone.
 
@@ -398,5 +399,101 @@ defmodule WippliBackend.Wippli do
   """
   def change_playlist_song(%PlaylistSong{} = playlist_song) do
     PlaylistSong.changeset(playlist_song, %{})
+  end
+
+  alias WippliBackend.Wippli.Participant
+
+  @doc """
+  Returns the list of participants.
+
+  ## Examples
+
+      iex> list_participants()
+      [%Participant{}, ...]
+
+  """
+  def list_participants do
+    Repo.all(Participant)
+  end
+
+  @doc """
+  Gets a single participant.
+
+  Raises `Ecto.NoResultsError` if the Participant does not exist.
+
+  ## Examples
+
+      iex> get_participant!(123)
+      %Participant{}
+
+      iex> get_participant!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_participant!(id), do: Repo.get!(Participant, id)
+
+  @doc """
+  Creates a participant.
+
+  ## Examples
+
+      iex> create_participant(%{field: value})
+      {:ok, %Participant{}}
+
+      iex> create_participant(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_participant(attrs \\ %{}) do
+    %Participant{}
+    |> Participant.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a participant.
+
+  ## Examples
+
+      iex> update_participant(participant, %{field: new_value})
+      {:ok, %Participant{}}
+
+      iex> update_participant(participant, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_participant(%Participant{} = participant, attrs) do
+    participant
+    |> Participant.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Participant.
+
+  ## Examples
+
+      iex> delete_participant(participant)
+      {:ok, %Participant{}}
+
+      iex> delete_participant(participant)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_participant(%Participant{} = participant) do
+    Repo.delete(participant)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking participant changes.
+
+  ## Examples
+
+      iex> change_participant(participant)
+      %Ecto.Changeset{source: %Participant{}}
+
+  """
+  def change_participant(%Participant{} = participant) do
+    Participant.changeset(participant, %{})
   end
 end

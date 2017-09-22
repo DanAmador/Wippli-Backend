@@ -19,6 +19,8 @@ defmodule WippliBackendWeb.UserController do
       |> render("show_without_zones.json", user: user)
     end
   end
+
+
   def show(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
     render(conn, user: user)

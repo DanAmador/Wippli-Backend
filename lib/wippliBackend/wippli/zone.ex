@@ -7,6 +7,7 @@ defmodule WippliBackend.Wippli.Zone do
   schema "zones" do
     field :password, :string
     belongs_to :user, WippliBackend.Accounts.User, foreign_key: :created_by
+    #has_many :partcipants, WippliBackend.Wippli.Participants, foreign_key: :zone_id
     timestamps()
   end
 

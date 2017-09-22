@@ -18,7 +18,7 @@ defmodule WippliBackend.Accounts do
 
   """
   def list_users do
-    Repo.all(User) |> Repo.preload(:zones)
+    Repo.all(User) |> Repo.preload(:zones) |> Repo.preload(:participants)
   end
 
   @doc """
@@ -35,7 +35,6 @@ defmodule WippliBackend.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def preload_zones!(user) do Repo.preload(user, :zones) end
   def get_user!(id) do
     Repo.get!(User, id)
     |> Repo.preload(:zones)

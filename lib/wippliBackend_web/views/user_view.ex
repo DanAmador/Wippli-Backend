@@ -22,6 +22,7 @@ defmodule WippliBackendWeb.UserView do
       phone: user.phone,
       telegram_id: user.telegram_id,
       created_zones: render_many(user.zones, ZoneView, "zone.json"),
+      participates_in: render_many(user.participants,ParticipantsView, "zones_in_user.json" ),
     updated_at: user.updated_at}
   end
 end
