@@ -15,10 +15,10 @@ defmodule WippliBackend.Accounts.User do
 
   @required_fields ~w(phone)
   @optional_fields ~w(telegram_id)
-  @doc false
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @required_fields, @optional_fields)
     |> unique_constraint(:phone, name: :phone_not_unique )
+    
   end
 end

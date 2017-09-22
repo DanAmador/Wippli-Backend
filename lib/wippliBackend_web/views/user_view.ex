@@ -10,6 +10,13 @@ defmodule WippliBackendWeb.UserView do
     %{data: render_one(user, UserView, "user.json")}
   end
 
+  def render("show_without_zones.json", %{user: user}) do
+    %{id: user.id,
+      phone: user.phone,
+      telegram_id: user.telegram_id
+    }
+  end
+
   def render("user.json", %{user: user}) do
     %{id: user.id,
       phone: user.phone,

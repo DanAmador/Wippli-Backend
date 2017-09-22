@@ -6,8 +6,17 @@ defmodule WippliBackend.Wippli do
   import Ecto.Query, warn: false
   alias WippliBackend.Repo
 
-  alias WippliBackend.Wippli.Song
+  alias WippliBackend.Wippli.Participants
+  def create_participant(zone, user) do
+    attrs = %{zone: zone, user: user}
+    %Participants{} |> Participants.changeset(attrs) |> Repo.insert!
+  end
 
+  def get_participant_in_zone(zone_id) do
+    Repo.get!(Zone, zone_id)
+    |> Repo.preload(:users)
+  end
+  alias WippliBackend.Wippli.Song
   @doc """
   Returns the list of songs.
 
@@ -36,6 +45,7 @@ defmodule WippliBackend.Wippli do
 
   """
   def get_song!(id), do: Repo.get!(Song, id)
+
 
   @doc """
   Creates a song.

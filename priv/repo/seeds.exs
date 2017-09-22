@@ -11,7 +11,3 @@
 # and so on) as they will fail if something goes wrong.
 
 
-#Created user and make said user create a zone 
-
-%WippliBackend.Accounts.User{phone: "fuck this shit"} |> WippliBackend.Repo.insert!
-

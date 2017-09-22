@@ -16,5 +16,7 @@ defmodule WippliBackend.Wippli.Participants do
     participants
     |> cast(attrs, [])
     |> validate_required([])
+    |> Ecto.Changeset.put_assoc(:zone, attrs.zone)
+    |> Ecto.Changeset.put_assoc(:user, attrs.user)
   end
 end

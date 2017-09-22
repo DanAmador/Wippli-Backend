@@ -16,11 +16,11 @@ defmodule WippliBackendWeb.UserController do
       conn
       |> put_status(:created)
       |> put_resp_header("location", user_path(conn, :show, user))
-      |> render("show.json", user: user)
+      |> render("show_without_zones.json", user: user)
     end
   end
   def show(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id) |> Accounts.preload_zones!
+    user = Accounts.get_user!(id)
     render(conn, user: user)
   end
 

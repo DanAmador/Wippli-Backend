@@ -18,7 +18,7 @@ defmodule WippliBackend.Accounts do
 
   """
   def list_users do
-    Repo.all(User)
+    Repo.all(User) |> Repo.preload(:zones)
   end
 
   @doc """
@@ -36,7 +36,10 @@ defmodule WippliBackend.Accounts do
 
   """
   def preload_zones!(user) do Repo.preload(user, :zones) end
-  def get_user!(id) do Repo.get!(User, id) end
+  def get_user!(id) do
+    Repo.get!(User, id)
+    |> Repo.preload(:zones)
+  end
 
 
   @doc """
