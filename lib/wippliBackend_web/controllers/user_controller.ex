@@ -16,7 +16,7 @@ defmodule WippliBackendWeb.UserController do
       conn
       |> put_status(:created)
       |> put_resp_header("location", user_path(conn, :show, user))
-      |> render("show_without_zones.json", user: user)
+      |> render("plain_user.json", user: user)
     end
   end
 

@@ -10,4 +10,10 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+alias WippliBackend.Accounts
+alias WippliBackend.Wippli
 
+Accounts.create_user(%{phone: "52345234"})
+
+user = WippliBackend.Accounts.get_user!(1)
+Wippli.create_zone(%{password: "fuck this "}, user)

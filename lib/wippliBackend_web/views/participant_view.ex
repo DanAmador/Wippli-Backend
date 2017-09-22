@@ -3,24 +3,32 @@ defmodule WippliBackendWeb.ParticipantView do
   alias WippliBackendWeb.ParticipantView
 
   def render("index.json",%{participants: participants}) do
-    %{data: render_many(participants, ParticipantsView, "participants.json")}
+    %{data: render_many(participants, ParticipantView, "participants.json")}
   end
 
   def render("show.json", %{participants: participants}) do
-    %{data: render_one(participants, ParticipantsView, "participants.json")}
+    %{data: render_one(participants, ParticipantView, "participants.json")}
   end
 
   def render("zones_in_user.json", %{participants: participants}) do
     %{
-      in_zone: participants.zone_id,
+      in_zone: render_one(participants.zone_id, ZoneView, "plain_zone.json"),
       updated_at: participants.updated_at
     }
   end
 
-  def render("participants_in_zone.json", %{participants: participants}) do
+
+  def render("users_in_zone.json", %{participants: participants}) do
     %{
-      user_id: participants.user_id,
+      shit: "fuck",
+      # user: render_one(participants.user, UserView, "plain_user.json"),
       updated_at: participants.updated_at
     }
   end
+  def render("test.json", %{participants: participants}) do
+    %{
+      shit: "fuck"
+    }
+  end
+
 end

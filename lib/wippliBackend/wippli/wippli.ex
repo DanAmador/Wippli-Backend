@@ -5,11 +5,14 @@ defmodule WippliBackend.Wippli do
 
   import Ecto.Query, warn: false
   alias WippliBackend.Repo
+  alias WippliBackend.Wippli.Participant
 
-  alias WippliBackend.Wippli.Participants
   def create_participant(zone, user) do
+IO.puts("fuck this retarded bullshit")
     attrs = %{zone: zone, user: user}
-    %Participants{} |> Participants.changeset(attrs) |> Repo.insert!
+    %Participant{}
+    |> Participant.changeset(attrs)
+    |> Repo.insert!
   end
 
   def get_participant_in_zone(zone_id) do
@@ -114,48 +117,16 @@ defmodule WippliBackend.Wippli do
 
   alias WippliBackend.Wippli.Zone
 
-  @doc """
-  Returns the list of zones.
-
-  ## Examples
-
-      iex> list_zones()
-      [%Zone{}, ...]
-
-  """
+  
   def list_zones do
     Repo.all(Zone) |> Repo.preload(:participants)
   end
 
-  @doc """
-  Gets a single zone.
-
-  Raises `Ecto.NoResultsError` if the Zone does not exist.
-
-  ## Examples
-
-      iex> get_zone!(123)
-      %Zone{}
-
-      iex> get_zone!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_zone!(id) do
     Repo.get!(Zone, id) |> Repo.preload(:participants)
   end
-  @doc """
-  Creates a zone.
 
-  ## Examples
 
-      iex> create_zone(%{field: value})
-      {:ok, %Zone{}}
-
-      iex> create_zone(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_zone(attrs \\ %{},user) do
     %Zone{}
     |> Zone.changeset(attrs,user)
@@ -401,7 +372,6 @@ defmodule WippliBackend.Wippli do
     PlaylistSong.changeset(playlist_song, %{})
   end
 
-  alias WippliBackend.Wippli.Participant
 
   @doc """
   Returns the list of participants.
@@ -431,25 +401,6 @@ defmodule WippliBackend.Wippli do
 
   """
   def get_participant!(id), do: Repo.get!(Participant, id)
-
-  @doc """
-  Creates a participant.
-
-  ## Examples
-
-      iex> create_participant(%{field: value})
-      {:ok, %Participant{}}
-
-      iex> create_participant(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_participant(attrs \\ %{}) do
-    %Participant{}
-    |> Participant.changeset(attrs)
-    |> Repo.insert()
-  end
-
   @doc """
   Updates a participant.
 

@@ -18,7 +18,7 @@ defmodule WippliBackend.Accounts do
 
   """
   def list_users do
-    Repo.all(User) |> Repo.preload(:zones) |> Repo.preload(:participants)
+    Repo.all(User) |> Repo.preload(:zones)
   end
 
   @doc """
