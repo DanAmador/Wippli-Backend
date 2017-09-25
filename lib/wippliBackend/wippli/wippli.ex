@@ -71,7 +71,6 @@ defmodule WippliBackend.Wippli do
     zone =  %Zone{}
     |> Zone.changeset(attrs,user)
     |> Repo.insert()
-      #create_participant(zone,user)
   end
 
     def update_zone(%Zone{} = zone, attrs) do

@@ -35,11 +35,12 @@ defmodule WippliBackendWeb.ZoneControllerTest do
 
       conn = get conn, zone_path(conn, :show, id)
       resp = json_response(conn, 200)
+      participants = resp["participants"]
       assert resp == %{
         "id" => id,
         "password" => "some password",
-        "participants" => [],
-        "updated_at" => resp["updated_at"]
+        "participants" => participants,
+        "updated_at" => resp["updated_at"],
       }
     end
 
