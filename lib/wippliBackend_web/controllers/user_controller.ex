@@ -20,7 +20,6 @@ defmodule WippliBackendWeb.UserController do
     end
   end
 
-  
   def show(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
     render(conn, user: user)
@@ -29,9 +28,8 @@ defmodule WippliBackendWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Accounts.get_user!(id)
-
     with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
+      render(conn, "plain_user.json", user: user)
     end
   end
 

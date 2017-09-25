@@ -27,12 +27,13 @@ defmodule WippliBackendWeb.UserControllerTest do
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
       conn = post conn, user_path(conn, :create), user: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)
 
       conn = get conn, user_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "phone" => "some phone",
+        "created_zones" => [],
         "telegram_id" => "some telegram_id"}
     end
 
@@ -47,12 +48,13 @@ defmodule WippliBackendWeb.UserControllerTest do
 
     test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
       conn = put conn, user_path(conn, :update, user), user: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)
 
       conn = get conn, user_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "phone" => "some updated phone",
+        "created_zones" => [],
         "telegram_id" => "some updated telegram_id"}
     end
 

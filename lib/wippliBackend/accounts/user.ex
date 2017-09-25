@@ -14,12 +14,12 @@ defmodule WippliBackend.Accounts.User do
   end
 
 
-  @required_fields ~w(phone)
-  @optional_fields ~w(telegram_id)
+  @required_fields ~w(phone)a
+  @optional_fields ~w(telegram_id)a
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, @required_fields, @optional_fields)
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:phone, name: :phone_not_unique )
-    
   end
 end

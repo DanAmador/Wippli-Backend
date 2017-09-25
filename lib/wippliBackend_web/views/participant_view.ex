@@ -1,7 +1,7 @@
 defmodule WippliBackendWeb.ParticipantView do
   use WippliBackendWeb, :view
   alias WippliBackendWeb.ParticipantView
-  alias WippliBackendWeb.UserView
+
   def render("index.json",%{participants: participants}) do
     %{data: render_many(participants, ParticipantView, "participants.json")}
   end
