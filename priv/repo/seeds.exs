@@ -16,5 +16,4 @@ alias WippliBackend.Wippli
 
 Accounts.create_user(%{phone: "52345234"})
 Accounts.create_user(%{phone: "534223423"})
-user = WippliBackend.Accounts.get_user!(1)
-Wippli.create_zone(%{password: "fuck"}, user)
+Wippli.create_zone(%{password: "fuck"}, 1)

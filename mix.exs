@@ -20,12 +20,12 @@ defmodule WippliBackend.Mixfile do
   def application do
     [
       mod: {WippliBackend.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:ex_machina, :logger, :runtime_tools]
     ]
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/factories"]
   defp elixirc_paths(_),     do: ["lib"]
 
   # Specifies your project dependencies.
@@ -33,6 +33,7 @@ defmodule WippliBackend.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ex_machina, "~> 2.1"},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
       {:cors_plug, "~> 1.1"},

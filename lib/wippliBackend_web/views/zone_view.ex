@@ -3,11 +3,11 @@ defmodule WippliBackendWeb.ZoneView do
   alias WippliBackendWeb.ZoneView
   alias WippliBackendWeb.ParticipantView
   def render("index.json", %{zones: zones}) do
-    %{data: render_many(zones, ZoneView, "zone_with_participants.json")}
+    render_many(zones, ZoneView, "zone_with_participants.json")
   end
 
   def render("show.json", %{zone: zone}) do
-    %{data: render_one(zone, ZoneView, "zone.json")}
+    render_one(zone, ZoneView, "plain_zone.json")
   end
 
 
@@ -18,7 +18,7 @@ defmodule WippliBackendWeb.ZoneView do
       updated_at: zone.updated_at}
   end
 
-  def render("zone.json", %{zone: zone}) do
+  def render("plain_zone.json", %{zone: zone}) do
     %{id: zone.id,
       password: zone.password,
       created_at: zone.inserted_at}

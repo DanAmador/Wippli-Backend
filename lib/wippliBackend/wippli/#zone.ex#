@@ -17,12 +17,6 @@ defmodule WippliBackend.Wippli.Zone do
     zone
     |> cast(attrs, @required_fields)
     |> validate_required(@required_fields)
-    |> Ecto.Changeset.put_assoc(:user, user)
-  end
-
-  def update_set(%Zone{} = zone, attrs) do
-    zone
-    |> cast(attrs, @required_fields)
-    |> validate_required(@required_fields)
+    |> Ecto.Changeset.cast_assoc(:user, user, required: true )
   end
 end
