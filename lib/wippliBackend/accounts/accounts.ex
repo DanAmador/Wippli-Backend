@@ -9,12 +9,13 @@ defmodule WippliBackend.Accounts do
   alias WippliBackend.Accounts.User
 
   def list_users do
-    Repo.all(User) |> Repo.preload(:zones)
+    Repo.all(User) |> Repo.preload([:zones, :participants])
   end
 
   def get_user!(id) do
     Repo.get!(User, id)
-    |> Repo.preload(:zones)
+    |> Repo.preload(:participants)
+    #|> Repo.preload([:zones, :participants])
   end
 
 

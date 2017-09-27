@@ -11,7 +11,7 @@ defmodule WippliBackend.Wippli do
 
   #Participants
   def create_participant(zone, user) do
-    attrs = %{zone: zone, user: user}
+    attrs = %{zone: get_zone!(1), user: Accounts.get_user!(1)}
     %Participant{}
     |> Participant.changeset(attrs)
     |> Repo.insert!
@@ -68,15 +68,45 @@ defmodule WippliBackend.Wippli do
 
   def create_zone(attrs \\ %{}, user_id) do
     user = Accounts.get_user!(user_id)
-    zone =  %Zone{}
+    %Zone{}
     |> Zone.changeset(attrs,user)
     |> Repo.insert()
   end
 
-    def update_zone(%Zone{} = zone, attrs) do
-    zone
-    |> Zone.update_set(attrs)
-    |> Repo.update()
+
+  def validate_user(zone, user_id) do
+    IO.inspect(zone)
+    IO.inspect(user_id)
+    IO.inspect(zone.belongs_to == user_id)
+    if (zone.created_by == user_id) do
+      IO.inspect("users are fucking valid")
+      {:ok, true}
+    else
+      IO.inspect("users didn't fucking match")
+      {:error, :forbidden }
+    end
+
+  end
+
+  def validate_password(zone, old_password) do
+    if zone.password == old_password do
+      {:ok, true}
+    else
+      {:error, :internal_server_error}
+    end
+  end
+
+  def update_zone(%Zone{} = zone, attrs) do
+    with {:ok, true} <- validate_user(zone, attrs["user_id"]), validate_password(zone, attrs["old_password"]) do
+      zone
+      |> Zone.update_set(attrs)
+      |> Repo.update()
+    else
+      {:error, :internal_server_error} -> {:error, %{status: :internal_server_error, message: "Passwords don't match"}}
+
+      {:error, :forbidden} -> {:error,  %{status: :forbidden, message: "User didn't create this zone"}}
+
+    end
   end
 
   def delete_zone(%Zone{} = zone) do

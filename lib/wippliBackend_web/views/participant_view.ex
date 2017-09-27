@@ -10,7 +10,7 @@ defmodule WippliBackendWeb.ParticipantView do
     %{data: render_one(participants, ParticipantView, "participants.json")}
   end
 
-  def render("zones_in_user.json", %{participants: participants}) do
+  def render("zone_in_user.json", %{participants: participants}) do
     %{
       zone: participants.zone_id,
       joined_at: participants.updated_at
@@ -27,13 +27,13 @@ defmodule WippliBackendWeb.ParticipantView do
 
 
   def render("created.json", %{user_id: user_id, zone_id: zone_id}) do
-    
     %{
       user_id: user_id,
       zone_id: zone_id
     }
   end
-    def render("users_in_zone.json", %{participants: participants}) do
+
+  def render("users_in_zone.json", %{participants: participants}) do
     %{
       user_id: participants.user_id,
       joined_at: participants.updated_at
