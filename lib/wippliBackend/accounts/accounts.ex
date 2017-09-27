@@ -15,6 +15,7 @@ defmodule WippliBackend.Accounts do
   def get_simple_user!(id) do
     Repo.get!(User, id)
   end
+
   def get_user!(id) do
     Repo.get!(User, id)
     |> Repo.preload([:zones, :participants])

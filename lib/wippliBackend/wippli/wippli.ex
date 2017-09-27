@@ -64,6 +64,7 @@ defmodule WippliBackend.Wippli do
   def get_simple_zone!(id) do
     Repo.get!(Zone, id)
   end
+
   def get_zone!(id) do
     Repo.get!(Zone, id) |> Repo.preload(:participants)
   end
@@ -78,14 +79,9 @@ defmodule WippliBackend.Wippli do
 
 
   def validate_user(zone, user_id) do
-    IO.inspect(zone)
-    IO.inspect(user_id)
-    IO.inspect(zone.belongs_to == user_id)
     if (zone.created_by == user_id) do
-      IO.inspect("users are fucking valid")
       {:ok, true}
     else
-      IO.inspect("users didn't fucking match")
       {:error, :forbidden }
     end
 
@@ -100,7 +96,7 @@ defmodule WippliBackend.Wippli do
   end
 
   def update_zone(%Zone{} = zone, attrs) do
-    with {:ok, true} <- validate_user(zone, attrs["user_id"]), validate_password(zone, attrs["old_password"]) do
+    with {:ok, true} <- validate_user(zone, attrs.user_id), {:ok, true} <- validate_password(zone, attrs.old_password) do
       zone
       |> Zone.update_set(attrs)
       |> Repo.update()

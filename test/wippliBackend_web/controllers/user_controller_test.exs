@@ -34,6 +34,7 @@ defmodule WippliBackendWeb.UserControllerTest do
         "id" => id,
         "phone" => "some phone",
         "created_zones" => [],
+        "participates_in" => nil,
         "telegram_id" => "some telegram_id"}
     end
 
@@ -55,6 +56,7 @@ defmodule WippliBackendWeb.UserControllerTest do
         "id" => id,
         "phone" => "some updated phone",
         "created_zones" => [],
+        "participates_in" => nil,
         "telegram_id" => "some updated telegram_id"}
     end
 

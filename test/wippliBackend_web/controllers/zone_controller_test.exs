@@ -7,9 +7,11 @@ defmodule WippliBackendWeb.ZoneControllerTest do
 
 
   @create_attrs %{password: "some password"}
-  @update_attrs %{password: "some updated password", user_id: 1}
+  @update_attrs %{old_password: "some_password", new_password: "some updated password", user_id: 1}
   @invalid_attrs %{password: nil}
-  @invalid_update_attrs %{password: nil, user_id: 1}
+  @invalid_update_attrs %{new_password: nil, old_password: nil, user_id: 1}
+  @invalid_user_update %{new_password: "new password", old_password: "some password", user_id: 2}
+  @invalid_pass_update %{new_password: "hello", old_password: "false password", user_id: 1}
 
   def fixture(:zone) do
     {:ok, zone} = Wippli.create_zone(@create_attrs, 1)
@@ -69,7 +71,17 @@ defmodule WippliBackendWeb.ZoneControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, zone: zone} do
       conn = put conn, zone_path(conn, :update, zone), @invalid_update_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 403)["errors"] != %{}
+    end
+
+    test "renders errors when user is invalid", %{conn: conn, zone: zone } do
+      conn = put conn, zone_path(conn, :update, zone), @invalid_user_update
+      assert json_response(conn, 403)["errors"] == "User didn't create this zone"
+    end
+
+    test "renders error when password is invalid", %{conn: conn, zone: zone} do
+      conn = put conn, zone_path(conn, :update, zone), @invalid_pass_update
+      assert json_response(conn, 500)["errors"] == "Passwords don't match"
     end
   end
 
