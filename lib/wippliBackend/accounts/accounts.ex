@@ -12,10 +12,12 @@ defmodule WippliBackend.Accounts do
     Repo.all(User) |> Repo.preload([:zones, :participants])
   end
 
+  def get_simple_user!(id) do
+    Repo.get!(User, id)
+  end
   def get_user!(id) do
     Repo.get!(User, id)
-    |> Repo.preload(:participants)
-    #|> Repo.preload([:zones, :participants])
+    |> Repo.preload([:zones, :participants])
   end
 
 

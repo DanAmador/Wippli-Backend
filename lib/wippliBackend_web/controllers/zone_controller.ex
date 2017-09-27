@@ -14,7 +14,7 @@ defmodule WippliBackendWeb.ZoneController do
   def create(conn, %{"zone" => zone_params, "user_id" => user_id}) do
     with {:ok, %Zone{} = zone} <- Wippli.create_zone(zone_params, user_id) do
       user = Accounts.get_user!(user_id)
-      Wippli.create_participant(zone,user)
+      Wippli.create_participant(zone.id,user_id)
       conn
       |> put_status(:created)
       |> put_resp_header("location", zone_path(conn, :show, zone))
@@ -27,12 +27,13 @@ defmodule WippliBackendWeb.ZoneController do
     render(conn, "zone_with_participants.json", zone: zone)
   end
 
-  def update(conn, %{"id" => id, "password" => password, "user_id" => user_id}) do
+  def update(conn, %{"id" => id, "old_password" => old_password, "user_id" => user_id, "new_password" => new_password}) do
     zone = Wippli.get_zone!(id)
-    with {:ok, %Zone{} = zone} <- Wippli.update_zone(zone, %{password: password}) do
+    with {:ok, %Zone{} = zone} <- Wippli.update_zone(zone, %{password: new_password, old_password: old_password, user_id: user_id}) do
       render(conn, "plain_zone.json", zone: zone)
     end
   end
+
   def delete(conn, %{"id" => id }) do
     zone = Wippli.get_zone!(id)
     with {:ok, %Zone{}} <- Wippli.delete_zone(zone) do

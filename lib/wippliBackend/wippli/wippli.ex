@@ -11,7 +11,7 @@ defmodule WippliBackend.Wippli do
 
   #Participants
   def create_participant(zone, user) do
-    attrs = %{zone: get_zone!(1), user: Accounts.get_user!(1)}
+    attrs = %{zone: get_simple_zone!(zone), user: Accounts.get_simple_user!(user)}
     %Participant{}
     |> Participant.changeset(attrs)
     |> Repo.insert!
@@ -61,6 +61,9 @@ defmodule WippliBackend.Wippli do
     Repo.all(Zone) |> Repo.preload(:participants)
   end
 
+  def get_simple_zone!(id) do
+    Repo.get!(Zone, id)
+  end
   def get_zone!(id) do
     Repo.get!(Zone, id) |> Repo.preload(:participants)
   end
