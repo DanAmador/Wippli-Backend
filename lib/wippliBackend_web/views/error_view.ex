@@ -17,4 +17,16 @@ defmodule WippliBackendWeb.ErrorView do
   def template_not_found(_template, assigns) do
     render "500.json", assigns
   end
+
+  def translate_reason(reason) do
+    case reason.status do
+      :forbidden -> "Action forbbiden: #{reason.message}"
+      :internal_server_error -> "Internal server error: #{reason.message}"
+    end
+  end
+
+  def render("error.json", %{reason: reason}) do
+    %{errors: translate_reason(reason)}
+  end
+
 end

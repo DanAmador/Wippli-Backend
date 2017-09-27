@@ -12,8 +12,10 @@ defmodule WippliBackendWeb.FallbackController do
     |> render(WippliBackendWeb.ChangesetView, "error.json", changeset: changeset)
   end
 
-  def call(conn, {:error, :not_found}) do
+  def call(conn, {:error, error } ) do
     conn
-    |> put_status(:not_found)
+    |> put_status(error.status)
+    |> render(WippliBackendWeb.ErrorView, "error.json", reason: error )
   end
+
 end
