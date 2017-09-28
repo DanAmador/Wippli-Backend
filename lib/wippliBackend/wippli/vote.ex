@@ -6,7 +6,7 @@ defmodule WippliBackend.Wippli.Vote do
 
   schema "votes" do
     field :rating, :integer
-
+    belongs_to :request, WippliBackend.Wippli.Request
     timestamps()
   end
 

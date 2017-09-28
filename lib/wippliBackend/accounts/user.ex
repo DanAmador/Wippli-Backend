@@ -9,6 +9,7 @@ defmodule WippliBackend.Accounts.User do
     field :telegram_id, :string
     #has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_zone
     has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_by
+    has_many :requests, WippliBackend.Wippli.Request, foreign_key: :requested_by
     has_one :participants, WippliBackend.Wippli.Participant
     timestamps()
   end

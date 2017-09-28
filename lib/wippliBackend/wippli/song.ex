@@ -5,11 +5,10 @@ defmodule WippliBackend.Wippli.Song do
 
 
   schema "songs" do
-    field :source, :integer
-    field :source_id, :string
     field :thumbnail, :string
     field :title, :string
-
+    field :source_id, :string
+    has_many :requests, WippliBackend.Wippli.Request
     timestamps()
   end
 

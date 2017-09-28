@@ -12,7 +12,7 @@ defmodule WippliBackendWeb.ZoneController do
 
   def create(conn, %{"zone" => zone_params, "user_id" => user_id}) do
     with {:ok, %Zone{} = zone} <- Wippli.create_zone(zone_params, user_id) do
-      Wippli.create_participant(zone.id,user_id)
+      Wippli.join_zone(zone.id, user_id, zone.password)
       conn
       |> put_status(:created)
       |> put_resp_header("location", zone_path(conn, :show, zone))

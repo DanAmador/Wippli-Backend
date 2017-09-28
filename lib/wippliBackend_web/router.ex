@@ -13,11 +13,12 @@ defmodule WippliBackendWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
     resources "/zones", ZoneController do
       resources "/participants/:user_id", ParticipantController, only: [:create, :delete]
+
     end
 
 
 
-    resources "/songs", SongController, except: [:new, :edit]
+    resources "/zones/:zone_id/requests/", RequestController, except: [:new, :show, :update, :edit]
     resources "/votes", VoteController, except: [:new, :edit]
   end
 end

@@ -8,6 +8,7 @@ defmodule WippliBackend.Wippli.Zone do
     field :password, :string
     belongs_to :user, WippliBackend.Accounts.User, foreign_key: :created_by
     has_many :participants, WippliBackend.Wippli.Participant
+    has_many :requests, WippliBackend.Wippli.Request
     timestamps()
   end
 

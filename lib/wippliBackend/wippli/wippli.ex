@@ -10,17 +10,20 @@ defmodule WippliBackend.Wippli do
   alias WippliBackend.Wippli.Participant
 
   #Participants
-  def create_participant(zone, user, password) do
+  def create_participant(attrs) do
+    %Participant{}
+    |> Participant.changeset(attrs)
+    |> Repo.insert!
+  end
+
+  def join_zone(zone_id,user,password) do
+    zone = get_simple_zone!(zone_id)
     with {:ok, true} <- validate_password(zone,password) do
-      attrs = %{zone: get_simple_zone!(zone), user: Accounts.get_simple_user!(user)}
-      %Participant{}
-      |> Participant.changeset(attrs)
-      |> Repo.insert!
+      %{zone: zone, user: Accounts.get_simple_user!(user)} |> create_participant()
     else
       {:error, :bad_request} -> %{status: :bad_request, message: "Passwords don't match"}
     end
   end
-
   def get_participant_in_zone(zone_id) do
     Repo.get!(Zone, zone_id)
     |> Repo.preload(:participants)
