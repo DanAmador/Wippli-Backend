@@ -12,10 +12,11 @@ defmodule WippliBackend.Wippli.Song do
     timestamps()
   end
 
-  @doc false
+
+  @required_fields ~w(title source_id thumbnail)a
   def changeset(%Song{} = song, attrs) do
     song
-    |> cast(attrs, [:title, :source, :source_id, :thumbnail, :url])
-    |> validate_required([:title, :source, :source_id, :thumbnail, :url])
+    |> cast(attrs, @required_fields)
+    |> validate_required(@required_fields)
   end
 end

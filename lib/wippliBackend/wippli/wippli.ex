@@ -181,23 +181,25 @@ defmodule WippliBackend.Wippli do
 
 
   #Requests
+ 
   alias WippliBackend.Wippli.Request
 
   defp get_no_embed(url) do
-    HTTPotion.get("https://noembed.com/embed?url=#{url}").body
+    HTTPotion.get("https://noembed.com/embed?url=#{url}").body |> Poison.decode!
   end
 
   defp process_youtube(no_embed_map, uri_struct) do
     query_map = uri_struct.query |> URI.decode_query
-    attrs = %{title: no_embed_map.title, thumbnail: no_embed_map.thumbnail, source_id: query_map["v"]}
+    attrs = %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: query_map["v"]}
+    IO.inspect(attrs)
     create_song(attrs)
   end
 
   def parse_url(song_url) do
     uri_struct = URI.parse(song_url)
     case uri_struct.host do
-      "youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
-    end
+      "www.youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
+    end 
   end
 
   def list_requests do

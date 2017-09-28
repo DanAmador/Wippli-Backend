@@ -6,6 +6,7 @@ defmodule WippliBackend.Repo.Migrations.CreateSongs do
       add :title, :string
       add :thumbnail, :string
       add :source_id, :string
+      add :url, :string
     end
 
   end
