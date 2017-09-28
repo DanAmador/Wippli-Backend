@@ -13,20 +13,14 @@ defmodule WippliBackendWeb.ParticipantController do
   def create(conn, %{"zone_id" => zone_id, "user_id" => user_id} = params) do
     user = Accounts.get_user!(user_id)
     zone = Wippli.get_zone!(zone_id)
-    if zone.password == params["password"] do
-      with {:ok, %Participant{} = participant} <- Wippli.create_participant(zone,user) do
+    with {:ok, %Participant{} = participant} <- Wippli.create_participant(zone,user, params["password"]) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", zone_path(conn, :show, participant))
       |> render(ParticipantView, "created.json", %{zone_id: zone.id, user_id: user.id})
-      end
-    else
-      conn
-      |> put_status(:bad_request)
-      |> render(ErrorView, "400.json", message: "Incorrect password")
-
     end
-end
+  end
+
   def show(conn, %{"id" => id}) do
     zone = Wippli.get_zone!(id)
     render(conn, "show.json", zone: zone)
