@@ -30,37 +30,6 @@ defmodule WippliBackend.Wippli do
   end
 
 
-
-#Songs
-  alias WippliBackend.Wippli.Song
-  def list_songs do
-    Repo.all(Song)
-  end
-
- def get_song!(id), do: Repo.get!(Song, id)
-
-  def create_song(attrs \\ %{}) do
-    %Song{}
-    |> Song.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_song(%Song{} = song, attrs) do
-    song
-    |> Song.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_song(%Song{} = song) do
-    Repo.delete(song)
-  end
-
-  def change_song(%Song{} = song) do
-    Song.changeset(song, %{})
-  end
-
-
-
   #Zones
   alias WippliBackend.Wippli.Zone
 
@@ -78,7 +47,7 @@ defmodule WippliBackend.Wippli do
 
 
   def create_zone(attrs \\ %{}, user_id) do
-    user = Accounts.get_user!(user_id)
+    user = Accounts.get_simple_user!(user_id)
     %Zone{}
     |> Zone.changeset(attrs,user)
     |> Repo.insert()
@@ -179,98 +148,92 @@ defmodule WippliBackend.Wippli do
     Participant.changeset(participant, %{})
   end
 
+
+  #Songs
+  alias WippliBackend.Wippli.Song
+  def list_songs do
+    Repo.all(Song)
+  end
+
+  def get_song!(url) do
+    Repo.get_by(Song, source_id: url)
+  end
+
+  def create_song(attrs \\ %{}) do
+    %Song{}
+    |> Song.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_song(%Song{} = song, attrs) do
+    song
+    |> Song.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_song(%Song{} = song) do
+    Repo.delete(song)
+  end
+
+  def change_song(%Song{} = song) do
+    Song.changeset(song, %{})
+  end
+
+
+  #Requests
   alias WippliBackend.Wippli.Request
 
-  @doc """
-  Returns the list of requests.
+  defp get_no_embed(url) do
+    HTTPotion.get("https://noembed.com/embed?url=#{url}").body
+  end
 
-  ## Examples
+  defp process_youtube(no_embed_map, uri_struct) do
+    query_map = uri_struct.query |> URI.decode_query
+    attrs = %{title: no_embed_map.title, thumbnail: no_embed_map.thumbnail, source_id: query_map["v"]}
+    create_song(attrs)
+  end
 
-      iex> list_requests()
-      [%Request{}, ...]
+  def parse_url(song_url) do
+    uri_struct = URI.parse(song_url)
+    case uri_struct.host do
+      "youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
+    end
+  end
 
-  """
   def list_requests do
     Repo.all(Request)
   end
 
-  @doc """
-  Gets a single request.
+  defp create_request_from_song(song, user_id, zone_id) do
+    %Request{}
+    |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
+    |> Repo.insert()
 
-  Raises `Ecto.NoResultsError` if the Request does not exist.
-
-  ## Examples
-
-      iex> get_request!(123)
-      %Request{}
-
-      iex> get_request!(456)
-      ** (Ecto.NoResultsError)
-
-  """
+  end
   def get_request!(id), do: Repo.get!(Request, id)
 
-  @doc """
-  Creates a request.
-
-  ## Examples
-
-      iex> create_request(%{field: value})
-      {:ok, %Request{}}
-
-      iex> create_request(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_request(attrs \\ %{}) do
-    %Request{}
-    |> Request.changeset(attrs)
-    |> Repo.insert()
+  #TODO parse url to create a Song changeset
+  #TODO modify create_song to be built from changeset
+  #TODO create_request_from_song(song_changeset, user_id, song_id) 
+  def create_request(user_id, zone_id, song_url) do
+    with {:ok, %Song{} = song } <- get_song!(song_url) do
+      create_request_from_song(song, user_id, zone_id)
+    else
+      nil -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
+      {:error, :bad_request} -> %{status: :bad_request, message: "URL doesn't match any service"}
+    end
   end
 
-  @doc """
-  Updates a request.
-
-  ## Examples
-
-      iex> update_request(request, %{field: new_value})
-      {:ok, %Request{}}
-
-      iex> update_request(request, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_request(%Request{} = request, attrs) do
     request
     |> Request.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a Request.
-
-  ## Examples
-
-      iex> delete_request(request)
-      {:ok, %Request{}}
-
-      iex> delete_request(request)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_request(%Request{} = request) do
     Repo.delete(request)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking request changes.
-
-  ## Examples
-
-      iex> change_request(request)
-      %Ecto.Changeset{source: %Request{}}
-
-  """
   def change_request(%Request{} = request) do
     Request.changeset(request, %{})
   end

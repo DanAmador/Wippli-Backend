@@ -15,7 +15,7 @@ defmodule WippliBackend.Wippli.Song do
   @doc false
   def changeset(%Song{} = song, attrs) do
     song
-    |> cast(attrs, [:title, :source, :source_id, :thumbnail])
-    |> validate_required([:title, :source, :source_id, :thumbnail])
+    |> cast(attrs, [:title, :source, :source_id, :thumbnail, :url])
+    |> validate_required([:title, :source, :source_id, :thumbnail, :url])
   end
 end
