@@ -150,37 +150,6 @@ defmodule WippliBackend.Wippli do
 
 
 
-  #Playlist Songs
-  alias WippliBackend.Wippli.PlaylistSong
-
-  def list_playlist_songs do
-    Repo.all(PlaylistSong)
-  end
-
-  def get_playlist_song!(id), do: Repo.get!(PlaylistSong, id)
-
-
-  def create_playlist_song(attrs \\ %{}) do
-    %PlaylistSong{}
-    |> PlaylistSong.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_playlist_song(%PlaylistSong{} = playlist_song, attrs) do
-    playlist_song
-    |> PlaylistSong.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_playlist_song(%PlaylistSong{} = playlist_song) do
-    Repo.delete(playlist_song)
-  end
-
-  def change_playlist_song(%PlaylistSong{} = playlist_song) do
-    PlaylistSong.changeset(playlist_song, %{})
-  end
-
-
 
   #Participants
   def list_participants do

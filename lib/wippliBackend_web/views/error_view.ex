@@ -20,7 +20,7 @@ defmodule WippliBackendWeb.ErrorView do
 
   def translate_reason(reason) do
     case reason.status do
-      :forbidden -> "Action forbbiden: #{reason.message}"
+      :forbidden -> "Action forbidden: #{reason.message}"
       :internal_server_error -> "Internal server error: #{reason.message}"
     end
   end

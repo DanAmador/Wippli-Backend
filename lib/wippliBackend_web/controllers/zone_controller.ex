@@ -3,7 +3,6 @@ defmodule WippliBackendWeb.ZoneController do
 
   alias WippliBackend.Wippli
   alias WippliBackend.Wippli.Zone
-  alias WippliBackend.Accounts
   action_fallback WippliBackendWeb.FallbackController
 
   def index(conn, _params) do

@@ -7,7 +7,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
 
 
   @create_attrs %{password: "some password"}
-  @update_attrs %{old_password: "some_password", new_password: "some updated password", user_id: 1}
+  @update_attrs %{old_password: "some password", new_password: "some updated password", user_id: 1}
   @invalid_attrs %{password: nil}
   @invalid_update_attrs %{new_password: nil, old_password: nil, user_id: 1}
   @invalid_user_update %{new_password: "new password", old_password: "some password", user_id: 2}
@@ -57,6 +57,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
 
     test "renders zone when data is valid", %{conn: conn, zone: %Zone{id: id} = zone} do
       conn = put conn, zone_path(conn, :update, zone), @update_attrs
+
       assert %{"id" => ^id} = json_response(conn, 200)
 
       conn = get conn, zone_path(conn, :show, id)
@@ -69,19 +70,19 @@ defmodule WippliBackendWeb.ZoneControllerTest do
       }
     end
 
-    test "renders errors when data is invalid", %{conn: conn, zone: zone} do
+   test "renders errors when data is invalid", %{conn: conn, zone: zone} do
       conn = put conn, zone_path(conn, :update, zone), @invalid_update_attrs
-      assert json_response(conn, 403)["errors"] != %{}
+      assert json_response(conn, 500)["errors"] != %{}
     end
 
     test "renders errors when user is invalid", %{conn: conn, zone: zone } do
       conn = put conn, zone_path(conn, :update, zone), @invalid_user_update
-      assert json_response(conn, 403)["errors"] == "User didn't create this zone"
+      assert json_response(conn, 403)["errors"] == "Action forbidden: User didn't create this zone"
     end
 
     test "renders error when password is invalid", %{conn: conn, zone: zone} do
       conn = put conn, zone_path(conn, :update, zone), @invalid_pass_update
-      assert json_response(conn, 500)["errors"] == "Passwords don't match"
+      assert json_response(conn, 500)["errors"] == "Internal server error: Passwords don't match"
     end
   end
 
