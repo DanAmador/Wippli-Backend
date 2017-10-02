@@ -2,6 +2,7 @@ defmodule WippliBackendWeb.ZoneView do
   use WippliBackendWeb, :view
   alias WippliBackendWeb.ZoneView
   alias WippliBackendWeb.ParticipantView
+  alias WippliBackendWeb.RequestView
   def render("index.json", %{zones: zones}) do
     render_many(zones, ZoneView, "zone_with_participants.json")
   end
@@ -11,12 +12,14 @@ defmodule WippliBackendWeb.ZoneView do
   end
 
 
-  def render("zone_with_participants.json", %{zone: zone }) do
+  def render("full_zone.json", %{zone: zone }) do
     %{id: zone.id,
       password: zone.password,
+      requests: render_many(zone.requests, RequestView, "request.json", as: :request),
       participants: render_many(zone.participants, ParticipantView, "users_in_zone.json", as: :participants),
       updated_at: zone.updated_at}
   end
+
 
   def render("plain_zone.json", %{zone: zone}) do
     %{id: zone.id,

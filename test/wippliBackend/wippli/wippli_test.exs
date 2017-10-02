@@ -2,7 +2,6 @@ defmodule WippliBackend.WippliTest do
   use WippliBackend.DataCase
 
   alias WippliBackend.Wippli
-  alias WippliBackend.Wippli.Song
   describe "requests" do
 
     test "parse_url/1 to return song struct " do

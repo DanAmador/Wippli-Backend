@@ -22,7 +22,8 @@ defmodule WippliBackendWeb.ZoneController do
 
   def show(conn, %{"id" => id}) do
     zone = Wippli.get_zone!(id)
-    render(conn, "zone_with_participants.json", zone: zone)
+    IO.inspect(zone)
+    render(conn, "full_zone.json", zone: zone)
   end
 
   def update(conn, %{"id" => id, "old_password" => old_password, "user_id" => user_id, "new_password" => new_password}) do

@@ -18,7 +18,7 @@ defmodule WippliBackendWeb.Router do
 
 
 
-    resources "/zones/:zone_id/requests/", RequestController, only: [:list, :create]
+    resources "/zones/:zone_id/requests/", RequestController, only: [:create]
     resources "/votes", VoteController, except: [:new, :edit]
   end
 end

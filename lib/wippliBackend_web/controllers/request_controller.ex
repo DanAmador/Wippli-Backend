@@ -19,9 +19,4 @@ defmodule WippliBackendWeb.RequestController do
       |> render("show.json", request: request)
     end
   end
-
-  def show(conn, %{"id" => id}) do
-    request = Wippli.get_request!(id)
-    render(conn, "show.json", request: request)
-  end
 end

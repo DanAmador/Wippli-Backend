@@ -10,10 +10,10 @@ defmodule WippliBackendWeb.SongView do
     %{data: render_one(song, SongView, "song.json")}
   end
 
-  def render("song.json", %{song: song}) do
+  def render("plain_song.json", %{song: song}) do
     %{id: song.id,
       title: song.title,
-      source: song.source,
+      #source: song.source,
       source_id: song.source_id,
       thumbnail: song.thumbnail}
   end

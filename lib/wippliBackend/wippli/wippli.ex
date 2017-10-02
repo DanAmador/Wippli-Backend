@@ -42,7 +42,7 @@ defmodule WippliBackend.Wippli do
   end
 
   def get_zone!(id) do
-    Repo.get!(Zone, id) |> Repo.preload(:participants)
+    Repo.get(Zone, id) |> Repo.preload([:participants,requests: :song ] )
   end
 
 
@@ -160,9 +160,13 @@ defmodule WippliBackend.Wippli do
   end
 
   def create_song(attrs \\ %{}) do
-    %Song{}
-    |> Song.changeset(attrs)
-    |> Repo.insert()
+    if attrs != {:error, :bad_request} do
+      %Song{}
+      |> Song.changeset(attrs)
+      |> Repo.insert()
+    else
+      {:error, :bad_request}
+    end
   end
 
   def update_song(%Song{} = song, attrs) do
@@ -202,6 +206,7 @@ defmodule WippliBackend.Wippli do
     case uri_struct.host do
       "www.youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
       "youtu.be" -> get_no_embed(song_url) |> process_youtube_minimized(uri_struct)
+      _ -> {:error, :bad_request}
     end
   end
 
@@ -210,13 +215,21 @@ defmodule WippliBackend.Wippli do
   end
 
   defp create_request_from_song(song, user_id, zone_id) do
-    IO.inspect(song)
-    %Request{}
-    |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
-    |> Repo.insert()
+    if song != {:error, :bad_request} do
+      %Request{}
+      |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
+      |> Repo.insert()
+
+    else
+      {
+        :error, :bad_request
+      }
+    end
   end
 
-  def get_request!(id), do: Repo.get!(Request, id)
+  def get_zone_with_requests!(id) do
+    Repo.get(Zone, id) |> Repo.preload(:requests, [requests: :songs])
+  end
 
   #TODO parse url to create a Song changeset
   #TODO modify create_song to be built from changeset
@@ -226,7 +239,7 @@ defmodule WippliBackend.Wippli do
       create_request_from_song(song, user_id, zone_id)
     else
       {:ok, nil} -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
-      {:error, :bad_request} -> %{status: :bad_request, message: "URL doesn't match any service"}
+      {:error, :bad_request} -> %{status: :bad_request, message: "URL #{song_url} doesn't match any service"}
     end
   end
 
