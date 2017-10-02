@@ -1,7 +1,6 @@
 defmodule WippliBackendWeb.RequestView do
   use WippliBackendWeb, :view
   alias WippliBackendWeb.RequestView
-  alias WippliBackendWeb.ZoneView
   alias WippliBackendWeb.SongView
 
   def render("index.json", %{requests: requests}) do

@@ -22,7 +22,6 @@ defmodule WippliBackendWeb.ZoneController do
 
   def show(conn, %{"id" => id}) do
     zone = Wippli.get_zone!(id)
-    IO.inspect(zone)
     render(conn, "full_zone.json", zone: zone)
   end
 

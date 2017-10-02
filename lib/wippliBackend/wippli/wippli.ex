@@ -159,11 +159,15 @@ defmodule WippliBackend.Wippli do
     {:ok, Repo.get_by(Song, url: url)}
   end
 
-  def create_song(attrs \\ %{}) do
+  def create_song(attrs) do
     if attrs != {:error, :bad_request} do
-      %Song{}
+      song = %Song{}
       |> Song.changeset(attrs)
+
+      song
       |> Repo.insert()
+
+      song
     else
       {:error, :bad_request}
     end
@@ -178,6 +182,7 @@ defmodule WippliBackend.Wippli do
   def delete_song(%Song{} = song) do
     Repo.delete(song)
   end
+
 
   def change_song(%Song{} = song) do
     Song.changeset(song, %{})
@@ -216,10 +221,9 @@ defmodule WippliBackend.Wippli do
 
   defp create_request_from_song(song, user_id, zone_id) do
     if song != {:error, :bad_request} do
-      %Request{}
+       %Request{}
       |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
-      |> Repo.insert()
-
+      |> Repo.insert
     else
       {
         :error, :bad_request

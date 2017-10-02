@@ -9,7 +9,6 @@ defmodule WippliBackend.Wippli.Request do
     belongs_to :zone, WippliBackend.Wippli.Zone
     belongs_to :song, WippliBackend.Wippli.Song
     has_many :votes, WippliBackend.Wippli.Vote
-
     timestamps()
   end
 
