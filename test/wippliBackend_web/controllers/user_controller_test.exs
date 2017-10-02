@@ -4,8 +4,12 @@ defmodule WippliBackendWeb.UserControllerTest do
   alias WippliBackend.Accounts
   alias WippliBackend.Accounts.User
 
-  @create_attrs %{phone: "some phone", telegram_id: "some telegram_id"}
-  @update_attrs %{phone: "some updated phone", telegram_id: "some updated telegram_id"}
+  @create_attrs %{
+    nickname: "Metrosexual Fruitcake",
+    phone: "some phone", telegram_id: "some telegram_id"}
+  @update_attrs %{
+    nickname: "Metrosexual Fruitcake",
+    phone: "some updated phone", telegram_id: "some updated telegram_id"}
   @invalid_attrs %{phone: nil, telegram_id: nil}
 
   def fixture(:user) do
@@ -32,6 +36,7 @@ defmodule WippliBackendWeb.UserControllerTest do
       conn = get conn, user_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
+        "nickname" => "Metrosexual Fruitcake",
         "phone" => "some phone",
         "created_zones" => [],
         "participates_in" => nil,
@@ -54,6 +59,7 @@ defmodule WippliBackendWeb.UserControllerTest do
       conn = get conn, user_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
+        "nickname" => "Metrosexual Fruitcake",
         "phone" => "some updated phone",
         "created_zones" => [],
         "participates_in" => nil,

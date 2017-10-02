@@ -14,8 +14,8 @@ alias WippliBackend.Accounts
 alias WippliBackend.Wippli
 
 
-Accounts.create_user(%{phone: "52345234"})
-Accounts.create_user(%{phone: "534223423"})
+Accounts.create_user(%{nickname: "Danny 1"})
+Accounts.create_user(%{nickname: "Danny 2"})
 Wippli.create_zone(%{password: "fuck"}, 1)
 Wippli.join_zone(1,1, "fuck")
 Wippli.create_request(1,1,"https://youtu.be/PLIJc7YE_jw")

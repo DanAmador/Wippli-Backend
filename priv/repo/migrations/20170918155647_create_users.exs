@@ -5,6 +5,7 @@ defmodule WippliBackend.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :phone, :string
       add :telegram_id, :string
+      add :nickname, :string
       timestamps()
     end
 

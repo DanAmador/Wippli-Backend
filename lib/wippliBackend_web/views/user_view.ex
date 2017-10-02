@@ -14,6 +14,7 @@ defmodule WippliBackendWeb.UserView do
 
   def render("plain_user.json", %{user: user}) do
     %{id: user.id,
+      nickname: user.nickname,
       phone: user.phone,
       telegram_id: user.telegram_id
     }
@@ -21,6 +22,7 @@ defmodule WippliBackendWeb.UserView do
 
   def render("user.json", %{user: user}) do
     %{id: user.id,
+      nickname: user.nickname,
       phone: user.phone,
       telegram_id: user.telegram_id,
       created_zones: render_many(user.zones, ZoneView, "plain_zone.json"),
