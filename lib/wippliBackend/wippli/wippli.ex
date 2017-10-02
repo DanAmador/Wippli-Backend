@@ -156,7 +156,7 @@ defmodule WippliBackend.Wippli do
   end
 
   def get_song!(url) do
-    Repo.get_by(Song, source_id: url)
+    {:ok, Repo.get_by(Song, url: url)}
   end
 
   def create_song(attrs \\ %{}) do
@@ -181,25 +181,28 @@ defmodule WippliBackend.Wippli do
 
 
   #Requests
- 
   alias WippliBackend.Wippli.Request
 
   defp get_no_embed(url) do
     HTTPotion.get("https://noembed.com/embed?url=#{url}").body |> Poison.decode!
   end
 
+  defp process_youtube_minimized(no_embed_map, uri_struct) do
+    id = uri_struct.path |> String.replace("/", "")
+     %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: id, url: uri_struct |> to_string}
+  end
+
   defp process_youtube(no_embed_map, uri_struct) do
     query_map = uri_struct.query |> URI.decode_query
-    attrs = %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: query_map["v"]}
-    IO.inspect(attrs)
-    create_song(attrs)
+    %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: query_map["v"], url: uri_struct |> to_string}
   end
 
   def parse_url(song_url) do
     uri_struct = URI.parse(song_url)
     case uri_struct.host do
       "www.youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
-    end 
+      "youtu.be" -> get_no_embed(song_url) |> process_youtube_minimized(uri_struct)
+    end
   end
 
   def list_requests do
@@ -207,11 +210,12 @@ defmodule WippliBackend.Wippli do
   end
 
   defp create_request_from_song(song, user_id, zone_id) do
+    IO.inspect(song)
     %Request{}
     |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
     |> Repo.insert()
-
   end
+
   def get_request!(id), do: Repo.get!(Request, id)
 
   #TODO parse url to create a Song changeset
@@ -221,7 +225,7 @@ defmodule WippliBackend.Wippli do
     with {:ok, %Song{} = song } <- get_song!(song_url) do
       create_request_from_song(song, user_id, zone_id)
     else
-      nil -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
+      {:ok, nil} -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
       {:error, :bad_request} -> %{status: :bad_request, message: "URL doesn't match any service"}
     end
   end

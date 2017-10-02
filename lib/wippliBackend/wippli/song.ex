@@ -8,12 +8,13 @@ defmodule WippliBackend.Wippli.Song do
     field :thumbnail, :string
     field :title, :string
     field :source_id, :string
+    field :url, :string
     has_many :requests, WippliBackend.Wippli.Request
     timestamps()
   end
 
 
-  @required_fields ~w(title source_id thumbnail)a
+  @required_fields ~w(title source_id thumbnail url)a
   def changeset(%Song{} = song, attrs) do
     song
     |> cast(attrs, @required_fields)
