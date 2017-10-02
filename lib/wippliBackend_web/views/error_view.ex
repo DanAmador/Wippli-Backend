@@ -18,7 +18,8 @@ defmodule WippliBackendWeb.ErrorView do
   end
 
   def render("error.json", %{reason: reason}) do
-    %{errors: translate_reason(reason)}
+    %{errors: translate_reason(reason),
+      status: reason.status}
   end
 
 end

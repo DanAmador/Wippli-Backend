@@ -231,15 +231,12 @@ defmodule WippliBackend.Wippli do
     Repo.get(Zone, id) |> Repo.preload(:requests, [requests: :songs])
   end
 
-  #TODO parse url to create a Song changeset
-  #TODO modify create_song to be built from changeset
-  #TODO create_request_from_song(song_changeset, user_id, song_id) 
   def create_request(user_id, zone_id, song_url) do
     with {:ok, %Song{} = song } <- get_song!(song_url) do
       create_request_from_song(song, user_id, zone_id)
     else
       {:ok, nil} -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
-      {:error, :bad_request} -> %{status: :bad_request, message: "URL #{song_url} doesn't match any service"}
+    {:error, :bad_request} -> %{status: :bad_request, message: "URL #{song_url} doesn't match any service"}
     end
   end
 
