@@ -79,7 +79,7 @@ defmodule WippliBackend.Wippli do
     else
       {:error, :internal_server_error} -> {:error, %{status: :internal_server_error, message: "Passwords don't match"}}
 
-      {:error, :forbidden} -> {:error,  %{status: :forbidden, message: "User didn't create this zone"}}
+    {:error, :forbidden} -> {:error,  %{status: :forbidden, message: "User didn't create this zone"}}
 
     end
   end
@@ -198,7 +198,7 @@ defmodule WippliBackend.Wippli do
 
   defp process_youtube_minimized(no_embed_map, uri_struct) do
     id = uri_struct.path |> String.replace("/", "")
-     %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: id, url: uri_struct |> to_string}
+    %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: id, url: uri_struct |> to_string}
   end
 
   defp process_youtube(no_embed_map, uri_struct) do
@@ -221,7 +221,7 @@ defmodule WippliBackend.Wippli do
 
   defp create_request_from_song(song, user_id, zone_id) do
     if song != {:error, :bad_request} do
-       %Request{}
+      %Request{}
       |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
       |> Repo.insert
     else
