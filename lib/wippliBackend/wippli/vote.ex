@@ -7,11 +7,11 @@ defmodule WippliBackend.Wippli.Vote do
   schema "votes" do
     field :rating, :integer
     belongs_to :request, WippliBackend.Wippli.Request
-    belongs_to :user, WippliBackend.Accounts.User
+    belongs_to :user, WippliBackend.Accounts.User, foreign_key: :voted_by
     timestamps()
   end
 
-  @required_fields ~w(:rating)
+  @required_fields ~w(rating)a
   def changeset(%Vote{} = vote, attrs) do
     vote
     |> cast(attrs, @required_fields)

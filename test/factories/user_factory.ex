@@ -4,7 +4,7 @@ defmodule Wippli.UserFactory do
     quote do
       def user_factory do
         %User{
-          nickname: "Metrosexual Fruitcake"
+          nickname: "Metrosexual Fruitcake",
           phone: "555555555",
           id: 1,
           telegram_id: "12315"
