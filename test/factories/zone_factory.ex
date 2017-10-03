@@ -5,6 +5,7 @@ defmodule Wippli.ZoneFactory do
       def zone_factory do
         %Zone{
           id: 1,
+          created_by: 1,
           password: "password"
         }
       end

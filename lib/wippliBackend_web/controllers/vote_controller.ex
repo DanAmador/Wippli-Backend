@@ -10,7 +10,7 @@ defmodule WippliBackendWeb.VoteController do
     with {:ok, %Vote{} = vote} <- Wippli.create_vote(request_id, user_id, rating) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", request_path(conn, :show, vote))
+#      |> put_resp_header("location", request_path(conn, :show, vote))
       |> render("show.json", vote: vote)
     end
   end

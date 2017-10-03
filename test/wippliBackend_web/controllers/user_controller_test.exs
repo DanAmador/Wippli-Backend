@@ -10,7 +10,7 @@ defmodule WippliBackendWeb.UserControllerTest do
   @update_attrs %{
     nickname: "Metrosexual Fruitcake",
     phone: "some updated phone", telegram_id: "some updated telegram_id"}
-  @invalid_attrs %{phone: nil, telegram_id: nil}
+  @invalid_attrs %{nickname: nil, phone: nil, telegram_id: nil}
 
   def fixture(:user) do
     {:ok, user} = Accounts.create_user(@create_attrs)
@@ -78,9 +78,7 @@ defmodule WippliBackendWeb.UserControllerTest do
     test "deletes chosen user", %{conn: conn, user: user} do
       conn = delete conn, user_path(conn, :delete, user)
       assert response(conn, 204)
-      assert_error_sent 404, fn ->
-        get conn, user_path(conn, :show, user)
-      end
+
     end
   end
 

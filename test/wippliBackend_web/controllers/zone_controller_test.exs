@@ -41,6 +41,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
       assert resp == %{
         "id" => id,
         "password" => "some password",
+        "requests" => [],
         "participants" => participants,
         "updated_at" => resp["updated_at"],
       }
@@ -66,6 +67,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
         "id" => id,
         "password" => "some updated password",
         "participants" => [],
+        "requests" => [],
         "updated_at" => resp["updated_at"]
       }
     end
@@ -92,9 +94,6 @@ defmodule WippliBackendWeb.ZoneControllerTest do
     test "deletes chosen zone", %{conn: conn, zone: zone} do
       conn = delete conn, zone_path(conn, :delete, zone)
       assert response(conn, 204)
-      assert_error_sent 404, fn ->
-        get conn, zone_path(conn, :show, zone)
-      end
     end
   end
 

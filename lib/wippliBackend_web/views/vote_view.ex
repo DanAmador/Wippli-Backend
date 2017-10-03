@@ -7,7 +7,7 @@ defmodule WippliBackendWeb.VoteView do
   end
 
   def render("show.json", %{vote: vote}) do
-    %{data: render_one(vote, VoteView, "vote.json")}
+     render_one(vote, VoteView, "vote.json")
   end
 
   def render("vote.json", %{vote: vote}) do
