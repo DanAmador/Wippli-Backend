@@ -5,6 +5,7 @@ defmodule WippliBackend.Repo.Migrations.GenerateReferences do
 
     alter table(:zones) do
       add :created_by, references(:users), null: false
-      end
     end
+
+  end
 end

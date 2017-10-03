@@ -101,12 +101,16 @@ defmodule WippliBackend.Wippli do
 
 
   #Votes
-  def get_vote!(id), do: Repo.get!(Vote, id)
+  def get_vote!(id) do
+    Repo.get(Vote, id)
+  end
+  def get_votes_by_user_for_request!(zone_id,request_id, user_id) do
+    Repo.all(Request, user_id: user_id)
+  end
 
-
-  def create_vote(attrs \\ %{}) do
+  def create_vote(request_id, user_id, rating) do
     %Vote{}
-    |> Vote.changeset(attrs)
+    |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
     |> Repo.insert()
   end
 
@@ -192,6 +196,9 @@ defmodule WippliBackend.Wippli do
   #Requests
   alias WippliBackend.Wippli.Request
 
+  def get_simple_request(id) do
+    Repo.get(Request, id)
+  end
   defp get_no_embed(url) do
     HTTPotion.get("https://noembed.com/embed?url=#{url}").body |> Poison.decode!
   end

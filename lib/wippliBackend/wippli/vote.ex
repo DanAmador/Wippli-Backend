@@ -7,13 +7,16 @@ defmodule WippliBackend.Wippli.Vote do
   schema "votes" do
     field :rating, :integer
     belongs_to :request, WippliBackend.Wippli.Request
+    belongs_to :user, WippliBackend.Accounts.User
     timestamps()
   end
 
-  @doc false
+  @required_fields ~w(:rating)
   def changeset(%Vote{} = vote, attrs) do
     vote
-    |> cast(attrs, [:rating])
-    |> validate_required([:rating])
+    |> cast(attrs, @required_fields)
+    |> validate_required(@required_fields)
+    |> Ecto.Changeset.put_assoc(:request, attrs.request)
+    |> Ecto.Changeset.put_assoc(:user, attrs.user)
   end
 end
