@@ -114,14 +114,12 @@ defmodule WippliBackend.Wippli do
       nil -> create_or_update_vote(request_id, user_id, 0 )
       _ ->
         with %Vote{} = vote <- get_vote_by_user_for_request!(request_id, user_id) do
-          to_send =
             vote
             |>  Vote.update_set(%{rating: rating})
             |> Repo.update!
           {:ok, :accepted}
         else
           nil ->
-            to_send =
             %Vote{}
             |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
             |> Repo.insert()

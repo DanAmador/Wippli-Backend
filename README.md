@@ -1,19 +1,28 @@
-# WippliBackend
 
-To start your Phoenix server:
+# User
+     GET        /api/users                                     
+     GET        /api/users/:id                                 
+     POST       /api/users  Required: nickname Optional: telegram_id, phone
+     PUT/PATCH  /api/users/:id                                 
+     DELETE     /api/users/:id                                 
+   
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Start Phoenix endpoint with `mix phx.server`
+# Zone 
+      GET       /api/zones                                    
+      GET       /api/zones/:id                                 
+      POST      /api/zones Required: user_id, password
+      PATCH/PUT /api/zones/:id Required: old_password, user_id, new_password
+      DELETE    /api/zones/:id                                 
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+# Participants in Zone
+     Required: zone_id, user_id 
+     POST    /api/zones/:zone_id/participants/:user_id      
+     DELETE  /api/zones/:zone_id/participants/:user_id/:id  
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+# Song Requests  
+    Required: user_id, song_url 
+    POST    /api/zones/:zone_id/requests 
+    
+# Votes
+    Required: request_id, user_id, rating (integer)
+    POST    /api/requests/:request_id
