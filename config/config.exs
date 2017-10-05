@@ -7,6 +7,7 @@ use Mix.Config
 
 # General application configuration
 config :wippliBackend,
+  yt_key: "AIzaSyA4dtSq3_tLjwHyVOQjqwt9KS3pOTlM5gQ",
   ecto_repos: [WippliBackend.Repo]
 
 # Configures the endpoint
@@ -16,11 +17,11 @@ config :wippliBackend, WippliBackendWeb.Endpoint,
   render_errors: [view: WippliBackendWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: WippliBackend.PubSub,
            adapter: Phoenix.PubSub.PG2]
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

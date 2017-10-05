@@ -20,7 +20,7 @@ defmodule WippliBackend.Mixfile do
   def application do
     [
       mod: {WippliBackend.Application, []},
-      extra_applications: [:httpotion, :ex_machina, :logger, :runtime_tools]
+      extra_applications: [ :ex_machina, :logger, :runtime_tools]
     ]
   end
 
@@ -33,7 +33,7 @@ defmodule WippliBackend.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:httpotion, "~> 3.0.2"},
+      {:httpoison, "~> 0.13"},
       {:ex_machina, "~> 2.1"},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},

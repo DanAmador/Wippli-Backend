@@ -195,31 +195,10 @@ defmodule WippliBackend.Wippli do
 
   #Requests
   alias WippliBackend.Wippli.Request
+  alias WippliBackend.Wippli.RequestHelper
 
   def get_simple_request(id) do
     Repo.get(Request, id)
-  end
-  defp get_no_embed(url) do
-    HTTPotion.get("https://noembed.com/embed?url=#{url}").body |> Poison.decode!
-  end
-
-  defp process_youtube_minimized(no_embed_map, uri_struct) do
-    id = uri_struct.path |> String.replace("/", "")
-    %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: id, url: uri_struct |> to_string}
-  end
-
-  defp process_youtube(no_embed_map, uri_struct) do
-    query_map = uri_struct.query |> URI.decode_query
-    %{title: no_embed_map["title"], thumbnail: no_embed_map["thumbnail_url"], source_id: query_map["v"], url: uri_struct |> to_string}
-  end
-
-  def parse_url(song_url) do
-    uri_struct = URI.parse(song_url)
-    case uri_struct.host do
-      "www.youtube.com" -> get_no_embed(song_url) |> process_youtube(uri_struct)
-      "youtu.be" -> get_no_embed(song_url) |> process_youtube_minimized(uri_struct)
-      _ -> {:error, :bad_request}
-    end
   end
 
   def list_requests do
@@ -246,7 +225,7 @@ defmodule WippliBackend.Wippli do
     with {:ok, %Song{} = song } <- get_song!(song_url) do
       create_request_from_song(song, user_id, zone_id)
     else
-      {:ok, nil} -> parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
+      {:ok, nil} -> RequestHelper.parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
     {:error, :bad_request} -> %{status: :bad_request, message: "URL #{song_url} doesn't match any service"}
     end
   end
