@@ -16,6 +16,6 @@ defmodule WippliBackendWeb.Router do
     end
 
     resources "/zones/:zone_id/requests/", RequestController, only: [:create]
-    resources "/requests/:request_id", VoteController, only: [:create, :update, :delete]
+    resources "/requests/:request_id", VoteController, only: [:create]
   end
 end

@@ -19,4 +19,12 @@ defmodule WippliBackend.Wippli.Vote do
     |> Ecto.Changeset.put_assoc(:request, attrs.request)
     |> Ecto.Changeset.put_assoc(:user, attrs.user)
   end
+
+
+
+  def update_set(%Vote{} = vote, attrs) do
+    vote
+    |> cast(attrs, @required_fields)
+    |> validate_required(@required_fields)
+  end
 end

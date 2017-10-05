@@ -104,20 +104,30 @@ defmodule WippliBackend.Wippli do
   def get_vote!(id) do
     Repo.get(Vote, id)
   end
-  def get_votes_by_user_for_request!(zone_id,request_id, user_id) do
-    Repo.all(Request, user_id: user_id)
+
+  def get_vote_by_user_for_request!(request_id, user_id) do
+    Repo.get_by(Vote, [request_id: request_id, voted_by: user_id])
   end
 
-  def create_vote(request_id, user_id, rating) do
-    %Vote{}
-    |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
-    |> Repo.insert()
-  end
-
-  def update_vote(%Vote{} = vote, attrs) do
-    vote
-    |> Vote.changeset(attrs)
-    |> Repo.update()
+  def create_or_update_vote(request_id, user_id, rating) do
+    case rating   do
+      nil -> create_or_update_vote(request_id, user_id, 0 )
+      _ ->
+        with %Vote{} = vote <- get_vote_by_user_for_request!(request_id, user_id) do
+          to_send =
+            vote
+            |>  Vote.update_set(%{rating: rating})
+            |> Repo.update!
+          {:ok, :accepted}
+        else
+          nil ->
+            to_send =
+            %Vote{}
+            |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
+            |> Repo.insert()
+          {:ok, :created}
+        end
+    end
   end
 
   def delete_vote(%Vote{} = vote) do
@@ -215,10 +225,6 @@ defmodule WippliBackend.Wippli do
         :error, :bad_request
       }
     end
-  end
-
-  def get_zone_with_requests!(id) do
-    Repo.get(Zone, id) |> Repo.preload(:requests, [requests: :songs])
   end
 
   def create_request(user_id, zone_id, song_url) do

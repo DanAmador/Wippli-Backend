@@ -8,7 +8,7 @@ defmodule WippliBackendWeb.RequestView do
   end
 
   def render("show.json", %{request: request}) do
-    %{data: render_one(request, RequestView, "request.json")}
+    render_one(request, RequestView, "request.json")
   end
 
   def render("request.json", %{request: request}) do

@@ -19,4 +19,5 @@ Accounts.create_user(%{nickname: "Danny 2"})
 Wippli.create_zone(%{password: "fuck"}, 1)
 Wippli.join_zone(1,1, "fuck")
 Wippli.create_request(1,1,"https://youtu.be/PLIJc7YE_jw")
-Wippli.create_vote(1,1,2)
+Wippli.create_or_update_vote(1,1,500)
+
