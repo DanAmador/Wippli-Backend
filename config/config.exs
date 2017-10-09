@@ -12,6 +12,7 @@ config :wippliBackend,
 
 # Configures the endpoint
 config :wippliBackend, WippliBackendWeb.Endpoint,
+  bot_name: "WippliBot",
   url: [host: "localhost"],
   secret_key_base: "8XCGJ3lEiKbdPvQBU+zeFvbNVoXJQXKWgX3zAx1vn0ubB5225bY2dIXyprO8zYzJ",
   render_errors: [view: WippliBackendWeb.ErrorView, accepts: ~w(json)],
@@ -22,7 +23,8 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-
+config :nadia,
+  token: "425939657:AAEFOlTnwtGSwdEMKQ0dkVwOAPRsZMQXb-Q"
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

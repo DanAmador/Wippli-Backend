@@ -4,7 +4,7 @@ defmodule WippliBackend.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec
+    import Supervisor.Spec, warn: false 
 
     # Define workers and child supervisors to be supervised
     children = [
@@ -13,7 +13,8 @@ defmodule WippliBackend.Application do
       # Start the endpoint when the application starts
       supervisor(WippliBackendWeb.Endpoint, []),
       # Start your own worker by calling: WippliBackend.Worker.start_link(arg1, arg2, arg3)
-      # worker(WippliBackend.Worker, [arg1, arg2, arg3]),
+      worker(TelegramBot.Poller, []),
+      worker(TelegramBot.Matcher, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

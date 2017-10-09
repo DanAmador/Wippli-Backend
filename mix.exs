@@ -33,6 +33,7 @@ defmodule WippliBackend.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:nadia, "~> 0.4.2"},
       {:httpoison, "~> 0.13"},
       {:ex_machina, "~> 2.1"},
       {:phoenix, "~> 1.3.0"},
