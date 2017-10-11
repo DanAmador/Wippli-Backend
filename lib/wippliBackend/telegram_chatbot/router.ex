@@ -1,6 +1,5 @@
 defmodule TelegramBot.Router do
   @bot_name Application.get_env(:wippliBackend, :bot_name)
-
   # Code injectors
 
   defmacro __using__(_opts) do

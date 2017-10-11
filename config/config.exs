@@ -6,7 +6,9 @@
 use Mix.Config
 
 # General application configuration
+
 config :wippliBackend,
+  bot_name: "WippliBot",
   yt_key: "AIzaSyA4dtSq3_tLjwHyVOQjqwt9KS3pOTlM5gQ",
   ecto_repos: [WippliBackend.Repo]
 
