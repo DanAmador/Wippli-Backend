@@ -1,12 +1,14 @@
 defmodule TelegramBot.FsmServer do
   alias TelegramBot.FlowFsm
   alias TelegramBot.Cache
-
+  alias WippliBackend.Accounts
 
   def create(id) do
-    {_, _} = Cache.start(:id2pid)
-    pid = FlowFsm.new(initial_data: %{id: id})
-    Cache.get_or_create(:id2pid,id, pid)
+    pid = FlowFsm.new()
+    Cache.get_or_create(:id2pid, id, pid)
+    user = Accounts.get_simple_user_by_telegram_id(id)
+    Cache.get_or_create(:telegram2dbid, id, user.id)
+    pid
   end
 end
 
@@ -15,12 +17,17 @@ defmodule TelegramBot.FlowFsm do
   use ExActor.GenServer
   use Fsm, initial_state: :start
   alias WippliBackend.Accounts
-  #use ExActor.Responders
+  alias WippliBackend.Wippli
+  alias TelegramBot.Cache
+
+  defp get_user_info(telegram_id) do
+    %{telegram_id: telegram_id, db_id: Cache.get(:telegram2dbid, telegram_id)}
+  end
+
 
   defstate start do
-    defevent start_polling(id), data: data do
-      new_data = %{} |> Map.put(:telegram_id,  id)
-      next_state(:polling, new_data)
+    defevent start_polling(id) do
+      next_state(:polling, get_user_info(id))
     end
   end
 
@@ -29,16 +36,33 @@ defmodule TelegramBot.FlowFsm do
       new_data = data |> Map.put_new(:to_edit, [{String.to_atom(key)}] )
       next_state(:ask_value, new_data)
     end
+
+    defevent join_zone(zone_id), data: data do
+      zone =  Wippli.get_simple_zone!(zone_id)
+      new_data = data |> Map.put_new(:to_join, [{zone_id}])
+
+      cond  do
+        zone.password == nil -> next_state(:zone_register, new_data)
+        true -> next_state(:ask_password, data |> Map.put_new(:to_join, [{zone_id,nil}]))
+      end
+    end
   end
 
 
   defstate ask_value do
     defevent update_db(value), data: data do
-      params = data[:to_edit]
-      update_params = Map.new([{elem(params,0), elem(params,1)}])
+      key = data[:to_edit]
+      update_params = Map.new([{key, value}])
       Accounts.get_simple_user_by_telegram_id(data[:telegram_id]) |> Accounts.update_user(update_params)
-      new_data = %{} |> Map.put(:telegram_id, data[:telegram_id])
-      next_state(:polling, new_data)
+      next_state(:polling, get_user_info(data[:telegram_id]))
     end
   end
- end
+
+  defstate zone_register  do
+    defevent update_zone_for_user(), data: data  do
+      {id, pass} = data[:to_join]
+      Wippli.join_zone(id,data[:db_id], pass)
+      next_state(:polling, get_user_info(data[:telegram_id]))
+    end
+  end
+end

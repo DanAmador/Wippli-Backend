@@ -1,11 +1,13 @@
 defmodule WippliBackend.Application do
   use Application
-
+  alias TelegramBot.Cache
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec, warn: false 
 
+    {_, _} = Cache.start(:id2pid)
+    {_, _} = Cache.start(:telegram2dbid)
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository

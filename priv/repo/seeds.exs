@@ -14,7 +14,7 @@ alias WippliBackend.Accounts
 alias WippliBackend.Wippli
 
 
-Accounts.create_user(%{nickname: "Danny 1"})
+Accounts.create_user(%{nickname: "Danny 1", telegram_id: "1"})
 Accounts.create_user(%{nickname: "Danny 2"})
 Wippli.create_zone(%{password: "fuck"}, 1)
 Wippli.join_zone(1,1, "fuck")

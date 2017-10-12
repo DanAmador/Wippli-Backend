@@ -1,6 +1,8 @@
 defmodule TelegramBot.Commands do
   use TelegramBot.Router
   use TelegramBot.Commander
+  alias TelegramBot.FlowFsm
+  alias TelegramBot.Cache
 
 #  alias TelegramBot.Commands.Outside
 
