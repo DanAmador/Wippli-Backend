@@ -16,6 +16,19 @@ defmodule WippliBackend.Accounts do
     Repo.get!(User, id)
   end
 
+  defp create_random_nickname() do
+    count = Repo.aggregate(User, :count, :id)
+    "user" <> to_string(count)
+  end
+
+  def get_or_create_user_by_telegram_id(telegram_id) do
+    with %User{} = user <- get_simple_user_by_telegram_id(telegram_id) do
+      user
+    else
+      nil -> create_user(%{nickname: create_random_nickname(), telegram_id: telegram_id})
+    end
+  end
+
   def get_simple_user_by_telegram_id(telegram_id) do
     Repo.get_by(User, [telegram_id: telegram_id])
   end

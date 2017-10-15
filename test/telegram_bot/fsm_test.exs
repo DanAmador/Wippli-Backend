@@ -19,7 +19,7 @@ defmodule TelegramBot.FsmTest do
 
 
   test "return to polling if error  " do
-    fsm = FlowFsm.new |> FlowFsm.start_polling("1") |> FlowFsm.join_zone("1") 
+    fsm = FlowFsm.new |> FlowFsm.start_polling("1") |> FlowFsm.join_zone("1") |> FlowFsm.return_to_polling()
     assert fsm.state == :polling
   end
 

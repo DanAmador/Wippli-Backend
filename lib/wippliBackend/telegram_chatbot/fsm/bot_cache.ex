@@ -9,7 +9,7 @@ defmodule TelegramBot.Cache do
     end
   end
 
-  def get(table, key) do
+  def get_value(table, key) do
     get(get_cache_key(table, key))
   end
 

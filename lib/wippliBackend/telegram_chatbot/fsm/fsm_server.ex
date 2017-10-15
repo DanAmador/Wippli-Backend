@@ -11,8 +11,8 @@ defmodule TelegramBot.FsmServer do
 
   def create(id) do
     {:ok, pid} = start_link()
-    Cache.get_or_create(:id2pid, id, pid)
-    user = Accounts.get_simple_user_by_telegram_id(id)
+    Cache.get_or_create(:teleid2pid, id, pid)
+    user = Accounts.get_or_create_user_by_telegram_id(id)
     Cache.get_or_create(:telegram2dbid, id, user.id)
     pid
   end
@@ -23,6 +23,7 @@ defmodule TelegramBot.FsmServer do
       |> new_state
     end
   end
+
   for event <- @one_arity_events do
     defcall unquote(event)(data), state: fsm do
       FlowFsm.unquote(event)(fsm, data)

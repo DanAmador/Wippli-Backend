@@ -6,7 +6,7 @@ defmodule TelegramBot.FlowFsm do
 
 
   defp get_user_info(telegram_id) do
-    %{telegram_id: telegram_id, db_id: Cache.get(:telegram2dbid, telegram_id)}
+    %{telegram_id: telegram_id, db_id: Cache.get_value(:telegram2dbid, telegram_id)}
   end
 
   #Global error handler to return to the default state 
