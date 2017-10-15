@@ -7,7 +7,7 @@ defmodule Wippli.UserFactory do
           nickname: "Metrosexual Fruitcake",
           phone: "555555555",
           id: 1,
-          telegram_id: "12315"
+          telegram_id: "1"
         }
       end
     end

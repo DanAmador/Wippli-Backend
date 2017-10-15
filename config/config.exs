@@ -6,6 +6,11 @@
 use Mix.Config
 
 # General application configuration
+config :wippliBackend, TelegramBot.Cache,
+  adapter: Nebulex.Adapters.Local,
+  n_shards: 2,
+gc_interval: 86_400 # 24 hrs
+
 
 config :wippliBackend,
   bot_name: "WippliBot",

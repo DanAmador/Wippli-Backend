@@ -20,7 +20,7 @@ defmodule WippliBackend.Mixfile do
   def application do
     [
       mod: {WippliBackend.Application, []},
-      extra_applications: [ :ex_machina, :logger, :runtime_tools]
+      extra_applications: [:ex_machina, :logger, :runtime_tools]
     ]
   end
 
@@ -33,6 +33,7 @@ defmodule WippliBackend.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:nebulex, "~> 1.0.0-rc.1"},
       {:fsm, "~> 0.3.0"},
       {:exactor, "~> 2.2.3", warn_missing: false},
       {:nadia, "~> 0.4.2"},
