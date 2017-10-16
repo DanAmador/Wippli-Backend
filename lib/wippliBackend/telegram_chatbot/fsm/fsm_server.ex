@@ -2,23 +2,24 @@ defmodule TelegramBot.FsmServer do
   alias TelegramBot.FlowFsm
   alias TelegramBot.Cache
   alias WippliBackend.Accounts
-  alias TelegramBot.FsmServer
   use ExActor.GenServer
   @null_arity_events [:return_to_polling, :update_zone_for_user]
   @one_arity_events [:start_polling, :edit_info, :join_zone, :update_db]
 
 
-  defstart start_link, do: initial_state(FlowFsm.new)
+  defstart start_link(id), do: initial_state(create_fsm(id))
 
   defp create(id) do
-    {:ok, pid} = start_link()
+    {:ok, pid} = start_link(id)
     Cache.get_or_create(:teleid2pid, id, pid)
     user = Accounts.get_or_create_user_by_telegram_id(id)
     Cache.get_or_create(:telegram2dbid, id, user.id)
-    IO.inspect "motther fucking initializing this mother"
-    start_polling(pid, id)
-    IO.inspect(state(pid))
     pid
+  end
+
+  defp create_fsm(id) do
+    FlowFsm.new
+    |> FlowFsm.start_polling(id)
   end
 
   def pid_or_create(id) do
