@@ -8,9 +8,8 @@ defmodule TelegramBot.Commands do
 
   defp process_fsm_event( event, [pid | data] = params) do
     possible_events = pid |> FsmServer.state |> FlowFsm.possible_events_from_state
-    IO.inspect(possible_events)
+    IO.inspect(params)
     if Enum.member?(possible_events, event) do
-      Logger.log :info, "Applying " <> to_string(event) <> " to user " <> pid
       apply(FsmServer, event, params)
     else
     end
