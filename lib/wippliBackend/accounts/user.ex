@@ -22,6 +22,7 @@ defmodule WippliBackend.Accounts.User do
     user
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
+    |> unique_constraint(:telegram_id, name: :telegram_unique)
     |> unique_constraint(:phone, name: :phone_not_unique )
   end
 end

@@ -10,6 +10,6 @@ defmodule WippliBackend.Repo.Migrations.CreateUsers do
     end
 
     create unique_index(:users, :phone, name: :phone_not_unique)
-
+    create unique_index(:users, :telegram_id, name: :telegram_unique)
   end
 end
