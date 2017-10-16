@@ -4,9 +4,20 @@ defmodule TelegramBot.FlowFsm do
   alias WippliBackend.Wippli
   alias TelegramBot.Cache
 
+  # Shows the possible events a single state could have
+  @possible_events %{
+    start: [:start_polling],
+    polling: [:edit_info, :join_zone],
+    ask_value: [:update_db],
+    zone_register: [:update_zone_for_user]
+  }
+
+  def possible_events_from_state(state) do
+    @possible_events[state]
+  end
 
   defp get_user_info(telegram_id) do
-    %{telegram_id: telegram_id, db_id: Cache.get_value(:telegram2dbid, telegram_id)}
+    %{telegram_id: telegram_id, db_id: 1}
   end
 
   #Global error handler to return to the default state 

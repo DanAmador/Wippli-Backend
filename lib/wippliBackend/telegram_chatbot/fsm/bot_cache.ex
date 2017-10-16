@@ -13,5 +13,5 @@ defmodule TelegramBot.Cache do
     get(get_cache_key(table, key))
   end
 
-  defp get_cache_key(table, key), do: to_string(table) <> "_"<> key
+  defp get_cache_key(table, key), do: to_string(table) <> "_" <> to_string(key)
 end

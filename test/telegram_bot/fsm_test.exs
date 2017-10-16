@@ -14,7 +14,10 @@ defmodule TelegramBot.FsmTest do
 
 
   test "initial state is start" do
-    assert FlowFsm.new.state == :start
+    fsm = FlowFsm.new
+    assert fsm.state == :start
+    states = FlowFsm.possible_events_from_state(fsm.state)
+    assert states == [:polling]
   end
 
 
