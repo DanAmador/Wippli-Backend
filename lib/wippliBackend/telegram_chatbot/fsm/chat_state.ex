@@ -3,7 +3,7 @@ defmodule TelegramBot.FlowFsm do
   alias WippliBackend.Accounts
   alias WippliBackend.Wippli
   alias TelegramBot.Cache
-  alias TelegramBot.FlowFsm
+
   # Shows the possible events a single state could have
   @possible_events %{
     start: [:start_polling],
@@ -13,6 +13,12 @@ defmodule TelegramBot.FlowFsm do
     zone_register: [:update_zone_for_user],
     all: [:return_to_polling]
   }
+
+  def get_events_by_arity(arity) do
+    function_arity_map = __MODULE__.__info__(:functions)
+    Enum.filter(get_all_events(), fn(event) -> function_arity_map[event] == arity + 1 end)
+  end
+
 
   def get_all_events() do
     @possible_events
