@@ -7,10 +7,10 @@ defmodule WippliBackend.WippliTest do
   describe "Accounts" do
     test "get or create user by telegram id " do
       #Create user
-      {:ok, user} =  Accounts.get_or_create_user_by_telegram_id("1")
-      assert user.telegram_id == "1"
+      {:ok, user} =  Accounts.get_or_create_user_by_telegram_id(1)
+      assert user.telegram_id == 1
       #Again to retrieve same user
-      user2 =  Accounts.get_or_create_user_by_telegram_id("1")
+      user2 =  Accounts.get_or_create_user_by_telegram_id(1)
       assert user == user2
     end
   end

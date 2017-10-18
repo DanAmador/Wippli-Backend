@@ -6,10 +6,10 @@ defmodule WippliBackendWeb.UserControllerTest do
 
   @create_attrs %{
     nickname: "Metrosexual Fruitcake",
-    phone: "some phone", telegram_id: "some telegram_id"}
+    phone: "some phone", telegram_id: 1}
   @update_attrs %{
     nickname: "Metrosexual Fruitcake",
-    phone: "some updated phone", telegram_id: "some updated telegram_id"}
+    phone: "some updated phone", telegram_id: 1}
   @invalid_attrs %{nickname: nil, phone: nil, telegram_id: nil}
 
   def fixture(:user) do
@@ -40,7 +40,7 @@ defmodule WippliBackendWeb.UserControllerTest do
         "phone" => "some phone",
         "created_zones" => [],
         "participates_in" => nil,
-        "telegram_id" => "some telegram_id"}
+        "telegram_id" => 1}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -63,7 +63,7 @@ defmodule WippliBackendWeb.UserControllerTest do
         "phone" => "some updated phone",
         "created_zones" => [],
         "participates_in" => nil,
-        "telegram_id" => "some updated telegram_id"}
+        "telegram_id" => 2}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

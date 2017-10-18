@@ -6,7 +6,7 @@ defmodule WippliBackend.Accounts.User do
 
   schema "users" do
     field :phone, :string
-    field :telegram_id, :string
+    field :telegram_id, :integer
     field :nickname, :string
     has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_by
     has_many :requests, WippliBackend.Wippli.Request, foreign_key: :requested_by
