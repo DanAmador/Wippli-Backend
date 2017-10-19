@@ -9,7 +9,7 @@ defmodule WippliBackend.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
-    create unique_index(:users, :phone, name: :phone_not_unique)
-    create unique_index(:users, :telegram_id, name: :telegram_unique)
+    create unique_index(:users, :phone, name: :unique_phone)
+    create unique_index(:users, :telegram_id, name: :unique_telegram_id)
   end
 end

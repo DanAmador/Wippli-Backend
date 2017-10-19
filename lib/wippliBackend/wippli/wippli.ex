@@ -16,13 +16,14 @@ defmodule WippliBackend.Wippli do
     |> Repo.insert!
   end
 
-  def join_zone(zone_id,user,password) do
+  def join_zone(zone_id, user, password \\ nil) do
     zone = get_simple_zone!(zone_id)
     with {:ok, true} <- validate_password(zone,password) do
-      %{zone: zone, user: Accounts.get_simple_user!(user)} |> create_participant()
+      %{zone: zone, user: Accounts.get_simple_user!(user)} |> create_participant
     else
       {:error, :bad_request} -> %{status: :bad_request, message: "Passwords don't match"}
     end
+
   end
   def get_participant_in_zone(zone_id) do
     Repo.get!(Zone, zone_id)
@@ -38,7 +39,7 @@ defmodule WippliBackend.Wippli do
   end
 
   def get_simple_zone!(id) do
-    Repo.get!(Zone, id)
+    Repo.get(Zone, id)
   end
 
   def get_zone!(id) do

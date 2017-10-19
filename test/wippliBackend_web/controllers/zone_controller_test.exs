@@ -6,8 +6,8 @@ defmodule WippliBackendWeb.ZoneControllerTest do
   alias WippliBackend.Wippli.Zone
 
 
-  @create_attrs %{password: "some password"}
-  @update_attrs %{old_password: "some password", new_password: "some updated password", user_id: 1}
+  @create_attrs %{password: "some password", name: "Best zone"}
+  @update_attrs %{old_password: "some password", new_password: "some updated password", user_id: 1, name: "not so best zone"}
   @invalid_attrs %{password: nil}
   @invalid_update_attrs %{new_password: nil, old_password: nil, user_id: 1}
   @invalid_user_update %{new_password: "new password", old_password: "some password", user_id: 2}
@@ -17,6 +17,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
     {:ok, zone} = Wippli.create_zone(@create_attrs, 1)
     zone
   end
+
   setup %{conn: conn} do
 
     insert(:user)
@@ -40,6 +41,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
       participants = resp["participants"]
       assert resp == %{
         "id" => id,
+        "name" => "Best zone",
         "password" => "some password",
         "requests" => [],
         "participants" => participants,
@@ -65,6 +67,7 @@ defmodule WippliBackendWeb.ZoneControllerTest do
       resp = json_response(conn, 200)
       assert resp == %{
         "id" => id,
+        "name" => "not so best zone",
         "password" => "some updated password",
         "participants" => [],
         "requests" => [],

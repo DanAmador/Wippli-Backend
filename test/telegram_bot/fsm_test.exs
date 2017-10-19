@@ -8,7 +8,7 @@ defmodule TelegramBot.FsmTest do
   setup do
     insert(:user)
     insert(:zone)
-    FsmServer.create("1")
+    FsmServer.create(1)
     :ok
   end
 
@@ -22,15 +22,15 @@ defmodule TelegramBot.FsmTest do
 
 
   test "return to polling if error  " do
-    fsm = FlowFsm.new |> FlowFsm.start_polling("1") |> FlowFsm.join_zone("1") |> FlowFsm.return_to_polling()
+    fsm = FlowFsm.new |> FlowFsm.start_polling(1) |> FlowFsm.join_zone(1) |> FlowFsm.return_to_polling()
     assert fsm.state == :polling
   end
 
   test "test start polling flow " do
 
-    fsm = FlowFsm.new |> FlowFsm.start_polling("1")
+    fsm = FlowFsm.new |> FlowFsm.start_polling(1)
 
     assert fsm.state == :polling
-    assert fsm.data == %{telegram_id: "1", db_id: 1 }
+    assert fsm.data == %{telegram_id: 1, db_id: 1 }
   end
 end

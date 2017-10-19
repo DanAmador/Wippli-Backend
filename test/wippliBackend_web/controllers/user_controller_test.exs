@@ -9,7 +9,7 @@ defmodule WippliBackendWeb.UserControllerTest do
     phone: "some phone", telegram_id: 1}
   @update_attrs %{
     nickname: "Metrosexual Fruitcake",
-    phone: "some updated phone", telegram_id: 1}
+    phone: "some updated phone"}
   @invalid_attrs %{nickname: nil, phone: nil, telegram_id: nil}
 
   def fixture(:user) do
@@ -24,7 +24,7 @@ defmodule WippliBackendWeb.UserControllerTest do
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get conn, user_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["data"] != []
     end
   end
 
@@ -63,7 +63,7 @@ defmodule WippliBackendWeb.UserControllerTest do
         "phone" => "some updated phone",
         "created_zones" => [],
         "participates_in" => nil,
-        "telegram_id" => 2}
+        "telegram_id" => 1}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

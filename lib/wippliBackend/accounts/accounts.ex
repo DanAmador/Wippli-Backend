@@ -58,6 +58,4 @@ defmodule WippliBackend.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
-
-
 end
