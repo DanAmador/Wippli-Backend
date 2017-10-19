@@ -11,22 +11,17 @@ defmodule TelegramBot.Commands do
 
   defp process_fsm_event( event, [pid | _] = params) do
     possible_events = pid |> FsmServer.state |> FlowFsm.possible_events_from_state
-    IO.inspect "going to apply " <> to_string(event)
-    IO.inspect possible_events
-    IO.inspect params
     if Enum.member?(possible_events, event) do
       apply(FsmServer, event, params)
-      IO.inspect FsmServer.state(pid)
+      IO.inspect "new state: " <> to_string(FsmServer.state(pid))
     end
   end
 
   defp update_zone(pid, data, update) do
     if Integer.parse(data) != :error do
       {zone_id, _ } = Integer.parse(data)
-     advance_fsm(update, :ev_join_zone, zone_id)
-     IO.inspect "wtf is going on"
-     IO.inspect(Map.get(FsmServer.data(pid), "ayyy boii"))
-      Map.get(FsmServer.data(pid), :message, "Error while joining zone")
+      process_fsm_event(:ev_join_zone, [pid, zone_id])
+      Map.get(FsmServer.data(pid), :message, "Error getting zone")
     else
       "Please enter a valid zone"
     end
@@ -42,7 +37,6 @@ defmodule TelegramBot.Commands do
   end
 
   defp advance_fsm(update, event, data) do
-    IO.inspect "advance with params"
     process_fsm_event(event, [pid_from_update(update), data])
   end
 
@@ -75,16 +69,17 @@ defmodule TelegramBot.Commands do
     {pid, state} = pid_and_state_from_update(update)
     text = update.message.text
     case  state do
-      :zone_register -> send_message( update_zone(pid,text , update))
+      :zone_register ->
+        message = update_zone(pid, text, update)
+        send_message(FsmServer.state(pid))
       _ -> send_message "not doing anything?"
     end
-    send_message("this is a fucking reply")
   end
 
 
   message do
     Logger.log :warn, "Did not match the message"
-    {pid, state} = pid_and_state_from_update(update)
+    {_, state} = pid_and_state_from_update(update)
     case  state do
         _-> send_message "What do you want to do?",
       reply_markup: %Model.InlineKeyboardMarkup{

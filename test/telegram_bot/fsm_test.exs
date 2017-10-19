@@ -13,22 +13,23 @@ defmodule TelegramBot.FsmTest do
   end
 
 
-  test "initial state is start" do
+  test "initial state is polling" do
     fsm = FlowFsm.new
     assert fsm.state == :start
     states = FlowFsm.possible_events_from_state(fsm.state)
-    assert states == [:polling]
+    assert states == [:ev_edit_info, :goto_zone_register]
   end
 
 
   test "return to polling if error  " do
-    fsm = FlowFsm.new |> FlowFsm.start_polling(1) |> FlowFsm.join_zone(1) |> FlowFsm.return_to_polling()
+    fsm = FlowFsm.new(1)  |> FlowFsm.join_zone(1) |> FlowFsm.return_to_polling()
     assert fsm.state == :polling
+    assert fsm.data == %{telegram_id: 1, db_id: 1 }
   end
 
   test "test start polling flow " do
 
-    fsm = FlowFsm.new |> FlowFsm.start_polling(1)
+    fsm = FlowFsm.new(1)
 
     assert fsm.state == :polling
     assert fsm.data == %{telegram_id: 1, db_id: 1 }

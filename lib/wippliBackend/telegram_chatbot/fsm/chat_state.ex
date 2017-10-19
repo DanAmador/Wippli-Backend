@@ -1,9 +1,9 @@
 defmodule TelegramBot.FlowFsm do
-  alias WippliBackend.Accounts
   alias WippliBackend.Wippli
   alias TelegramBot.Cache
   alias WippliBackend.Wippli.Zone
   alias TelegramBot.Fsm
+  #alias WippliBackend.Accounts
   # Function purgatory
   #  defstate ask_value do
   #    defevent update_db(value), data: data do
@@ -18,7 +18,6 @@ defmodule TelegramBot.FlowFsm do
 
 
   @possible_events %{
-    start: [:start_polling],
     polling: [:ev_edit_info, :goto_zone_register],
     zone_register: [:ev_join_zone],
     ask_password: [:ev_zone_joined],
@@ -49,12 +48,12 @@ defmodule TelegramBot.FlowFsm do
     %{telegram_id: telegram_id, db_id: Cache.get_value(:telegram2dbid, telegram_id)}
   end
 
-  def next_state(fsm, {:state, new_state}) do
-    Map.put(fsm,:state, new_state)
+  def next_state(fsm, new_state) do
+     Map.put(fsm, :state, new_state)
   end
 
   def next_state(fsm, new_state, {key, value}) do
-    Map.put(fsm, key, value) |> next_state({:state, new_state})
+    Map.put(fsm, key, value) |> next_state(new_state)
   end
 
   defp join_zone_db(zone_id, user_id, password) do
@@ -74,11 +73,6 @@ defmodule TelegramBot.FlowFsm do
     next_state(fsm, :polling, get_user_info(fsm.data[:telegram_id]))
   end
 
-  #Start state
-  def start_polling(fsm, id) do
-    next_state(fsm, :polling, get_user_info(id))
-  end
-
   #Polling state
   def ev_edit_info(fsm, key) do
     next_state(fsm, :ask_value, {:to_edit,  [{String.to_atom(key)}]})
@@ -89,19 +83,19 @@ defmodule TelegramBot.FlowFsm do
   end
 
   def ev_join_zone(fsm, zone_id)  do
-    IO.inspect "I'm in ev join zone"
-    IO.inspect fsm
-    IO.inspect zone_id
     with %Zone{} = zone <- Wippli.get_simple_zone!(zone_id) do
-      IO.inspect(zone.password)
+      IO.inspect(zone)
       if zone.password == nil do
         IO.inspect "zone don't have p word, yop "
         next_state(fsm, :join_zone, join_zone_db(zone_id, fsm.data[:db_id], nil))
       else
-        next_state(fsm, :polling)
+        IO.inspect("zone has a fucking password")
+        next_state(fsm, :ask_password)
       end
     else
-      _ -> next_state(fsm, :polling, {:message, "Zone doesn't exist"})
+      _ ->
+        IO.inspect "Zone doesn't exit"
+        next_state(fsm, :polling, {:message, "Zone doesn't exist"})
     end
   end
 

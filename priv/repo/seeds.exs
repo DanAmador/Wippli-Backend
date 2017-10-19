@@ -16,8 +16,8 @@ alias WippliBackend.Wippli
 
 Accounts.create_user(%{nickname: "Danny 1", telegram_id: 1})
 Accounts.create_user(%{nickname: "Danny 2"})
-Wippli.create_zone(%{password: "fuck"}, 1)
-Wippli.create_zone(1)
+Wippli.create_zone(%{password: "fuck", name: "Not so cool zone"}, 1)
+Wippli.create_zone(%{name: "shitty zone"}, 2)
 Wippli.join_zone(1,1, "fuck")
 Wippli.create_request(1,1,"https://youtu.be/PLIJc7YE_jw")
 Wippli.create_or_update_vote(1,1,500)

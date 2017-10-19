@@ -4,7 +4,7 @@ defmodule WippliBackendWeb.ZoneView do
   alias WippliBackendWeb.ParticipantView
   alias WippliBackendWeb.RequestView
   def render("index.json", %{zones: zones}) do
-    render_many(zones, ZoneView, "zone_with_participants.json")
+    render_many(zones, ZoneView, "plain_zone.json")
   end
 
   def render("show.json", %{zone: zone}) do

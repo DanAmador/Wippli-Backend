@@ -34,7 +34,7 @@ defmodule TelegramBot.FsmServer do
   end
 
   for event <- FlowFsm.get_events_by_arity(1) do
-    defcall unquote(event)(data), state: fsm do
+   defcast unquote(event)(data), state: fsm do
       FlowFsm.unquote(event)(fsm, data)
       |> new_state
     end
