@@ -34,7 +34,6 @@ defmodule WippliBackend.Mixfile do
   defp deps do
     [
       {:nebulex, "~> 1.0.0-rc.1"},
-      {:fsm, "~> 0.3.0"},
       {:exactor, "~> 2.2.3", warn_missing: false},
       {:nadia, "~> 0.4.2"},
       {:httpoison, "~> 0.13"},
