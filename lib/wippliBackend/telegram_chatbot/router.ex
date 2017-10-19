@@ -29,10 +29,22 @@ defmodule TelegramBot.Router do
     end
   end
 
+  def generate_reply_matcher(handler) do
+    quote do
+      def do_match_message(%{
+            message: %{
+              reply_to_message: %{}
+            }
+                           } = var!(update)) do
+        handle_message unquote(handler), [var!(update)]
+      end
+    end
+  end
+
   defp generate_command(command, handler) do
     quote do
       def do_match_message(%{
-        message: %{
+            message: %{
           text: "/" <> unquote(command)
         }
       } = var!(update)) do
@@ -126,6 +138,16 @@ defmodule TelegramBot.Router do
   defmacro message(module, function) do
     generate_message_matcher {module, function}
   end
+
+  ## Replies
+  defmacro reply(do: function) do
+    generate_reply_matcher(function)
+  end
+
+  defmacro reply(module, function) do
+    generate_reply_matcher {module, function}
+  end
+
 
   ## Command
 
