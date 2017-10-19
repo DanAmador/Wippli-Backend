@@ -3,14 +3,25 @@ defmodule TelegramBot.FlowFsm do
   alias WippliBackend.Accounts
   alias WippliBackend.Wippli
   alias TelegramBot.Cache
+  alias WippliBackend.Wippli.Zone
+  # Function purgatory
+  defstate ask_value do
+    defevent update_db(value), data: data do
+      key = data[:to_edit]
+      update_params = Map.new([{key, value}])
+      Accounts.get_simple_user_by_telegram_id(data[:telegram_id]) |> Accounts.update_user(update_params)
+      next_state(:polling, get_user_info(data[:telegram_id]))
+    end
+  end
+
 
   # Shows the possible events a single state could have
   @possible_events %{
     start: [:start_polling],
-    polling: [:edit_info, :zone_join_process],
-    ask_zone_value: [:join_zone],
-    ask_value: [:update_db],
-    zone_register: [:update_zone_for_user],
+    polling: [:ev_edit_info, :goto_zone_register],
+    zone_register: [:ev_join_zone],
+    ask_password: [:ev_zone_joined],
+    ask_value: [:ev_update_db],
     all: [:return_to_polling]
   }
 
@@ -34,6 +45,19 @@ defmodule TelegramBot.FlowFsm do
     %{telegram_id: telegram_id, db_id: Cache.get_value(:telegram2dbid, telegram_id)}
   end
 
+  defp join_zone_db(data, zone_id, user_id, password) do
+    IO.inspect "in join zone db"
+    with{:ok, _} <- Wippli.join_zone(zone_id,user_id, password) do
+      IO.inspect "zone exists madafaka and joooined"
+      data |> Map.put_new(:message, "Successfully joined zone")
+    else
+      _ ->
+
+        IO.inspect "zone don't exist :( "
+        data |> Map.put_new(:message,"Error while trying to join zone")
+    end
+  end
+
   #Global error handler to return to the default state 
   defevent return_to_polling, data: data do
     next_state(:polling, get_user_info(data[:telegram_id]))
@@ -46,42 +70,40 @@ defmodule TelegramBot.FlowFsm do
   end
 
   defstate polling do
-    defevent edit_info(key), data: data do
+    defevent ev_edit_info(key), data: data do
       new_data = data |> Map.put_new(:to_edit, [{String.to_atom(key)}] )
       next_state(:ask_value, new_data)
     end
 
-    defevent zone_join_process(), data: data do
-      next_state(:ask_zone_value, data)
-    end
-   end
-
-
-  defstate ask_zone_value do
-    defevent join_zone(zone_id), data: data do
-      zone =  Wippli.get_simple_zone!(zone_id)
-      new_data = data |> Map.put_new(:to_join, [{zone_id}])
-
-      case zone.password do
-        nil -> next_state(:zone_register, new_data)
-        _ -> next_state(:ask_password, data |> Map.put_new(:to_join, [{zone_id,nil}]))
-      end
-    end
-  end
-  defstate ask_value do
-    defevent update_db(value), data: data do
-      key = data[:to_edit]
-      update_params = Map.new([{key, value}])
-      Accounts.get_simple_user_by_telegram_id(data[:telegram_id]) |> Accounts.update_user(update_params)
-      next_state(:polling, get_user_info(data[:telegram_id]))
+    defevent goto_zone_register, data: data do
+      next_state(:zone_register, data)
     end
   end
 
-  defstate zone_register  do
-    defevent update_zone_for_user(), data: data  do
-      {id, pass} = data[:to_join]
-      Wippli.join_zone(id,data[:db_id], pass)
-      next_state(:polling, get_user_info(data[:telegram_id]))
+  defstate zone_register do
+    defevent ev_join_zone(zone_id), data: data do
+      IO.inspect "I'm in ev join zone"
+      next_state(:ask_value, new_data)
+      IO.inspect data
+      #     IO.inspect zone_id
+ #     with %Zone{} = zone <- Wippli.get_simple_zone!(zone_id) do
+ #       IO.inspect(zone.password)
+ #       if zone.password == nil do
+ #         IO.inspect "zone don't have p word, yop "
+ #         next_state(:join_zone, join_zone_db(data,zone_id, data[:db_id], nil))
+ #       else
+ #         next_state(:polling, data )#|> Map.put_new(:to_join, zone_id))
+ #       end
+ #     else
+ #       _ -> next_state(:polling, data |> Map.put_new(:message, "Zone doesn't exist"))
+ #     end
+
     end
   end
-end
+
+  defstate ask_password  do
+    defevent join_zone(password), data: data  do
+      next_state(:return_to_polling, join_zone_db(data, data[:to_join],data[:db_id], password))
+    end
+  end
+ end

@@ -9,12 +9,12 @@ defmodule TelegramBot.FsmServer do
   defp create(id) do
     {:ok, pid} = start_link(id)
     Cache.get_or_create(:teleid2pid, id, pid)
-    user = Accounts.get_or_create_user_by_telegram_id(id)
-    Cache.get_or_create(:telegram2dbid, id, user.id)
     pid
   end
 
   defp create_fsm(id) do
+    user = Accounts.get_or_create_user_by_telegram_id(id)
+    Cache.get_or_create(:telegram2dbid, id, user.id)
     FlowFsm.new
     |> FlowFsm.start_polling(id)
   end
