@@ -1,5 +1,6 @@
 defmodule TelegramBot.FlowFsm do
   alias WippliBackend.Wippli
+  alias WippliBackend.Wippli.Participant
   alias TelegramBot.Cache
   alias WippliBackend.Wippli.Zone
   alias TelegramBot.Fsm
@@ -20,7 +21,7 @@ defmodule TelegramBot.FlowFsm do
   @possible_events %{
     polling: [:ev_edit_info, :goto_zone_register],
     zone_register: [:ev_join_zone],
-    ask_password: [:ev_zone_joined],
+    ask_password: [:ev_join_zone_with_pass],
     ask_value: [:ev_update_db],
     all: [:return_to_polling]
   }
@@ -49,7 +50,8 @@ defmodule TelegramBot.FlowFsm do
   end
 
   def next_state(fsm, new_state) do
-     Map.put(fsm, :state, new_state)
+    fsm2 = Map.put(fsm, :state, new_state)
+    fsm2
   end
 
   def next_state(fsm, new_state, {key, value}) do
@@ -57,20 +59,12 @@ defmodule TelegramBot.FlowFsm do
   end
 
   defp join_zone_db(zone_id, user_id, password) do
-    IO.inspect "in join zone db"
-    with{:ok, _} <- Wippli.join_zone(zone_id,user_id, password) do
-      IO.inspect "zone exists madafaka and joooined"
-      {:message, "Successfully joined zone"}
+    with {:ok, %Participant{}} <- Wippli.join_zone(zone_id,user_id, password) do
+      {:message, "Successfully joined zone " <> to_string(zone_id)}
     else
       _ ->
-        IO.inspect "zone don't exist :( "
-      {:message,"Error while trying to join zone"}
+        {:message,"Error while trying to join zone"}
     end
-  end
-
-  #Global error handler to return to the default state
-  def return_to_polling(fsm) do
-    next_state(fsm, :polling, get_user_info(fsm.data[:telegram_id]))
   end
 
   #Polling state
@@ -84,25 +78,28 @@ defmodule TelegramBot.FlowFsm do
 
   def ev_join_zone(fsm, zone_id)  do
     with %Zone{} = zone <- Wippli.get_simple_zone!(zone_id) do
-      IO.inspect(zone)
       if zone.password == nil do
-        IO.inspect "zone don't have p word, yop "
-        next_state(fsm, :join_zone, join_zone_db(zone_id, fsm.data[:db_id], nil))
+        next_state(fsm, :polling, join_zone_db(zone_id, fsm.data[:db_id], nil))
       else
-        IO.inspect("zone has a fucking password")
-        next_state(fsm, :ask_password)
+        next_state(fsm, :ask_password, {:to_edit, zone_id})
       end
     else
       _ ->
-        IO.inspect "Zone doesn't exit"
         next_state(fsm, :polling, {:message, "Zone doesn't exist"})
     end
   end
 
+
   #Ask Password state
-  def join_zone(fsm, password)  do
-    data = fsm.data
-    next_state(fsm, :return_to_polling, join_zone_db(data[:to_join], data[:db_id], password))
+  def ev_join_zone_with_pass(%Fsm{to_edit: zone_id} = fsm, password)  do
+    with %Zone{} = zone <- Wippli.get_simple_zone!(zone_id) do
+      next_state(fsm, :polling, join_zone_db(zone_id, fsm.data[:db_id], password))
+    end
   end
 
+  #All States, resets the fsm
+  def return_to_polling(fsm) do
+    fsm2 = new(fsm.data[:telegram_id])
+    next_state(fsm2, :polling)
+  end
 end

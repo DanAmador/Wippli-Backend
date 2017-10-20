@@ -13,11 +13,12 @@ defmodule WippliBackend.Wippli.Zone do
     timestamps()
   end
 
-  @required_fields ~w(password)a
+  @required_fields ~w(name)a
+  @optional_fields  ~w(password)a
   @doc false
   def changeset(%Zone{} = zone, attrs, user \\ %{}) do
     zone
-    |> cast(attrs, @required_fields)
+    |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> Ecto.Changeset.put_assoc(:user, user)
   end
