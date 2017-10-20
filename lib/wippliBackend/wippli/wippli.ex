@@ -16,16 +16,28 @@ defmodule WippliBackend.Wippli do
     |> Repo.insert!
   end
 
-  def join_zone(zone_id, user, password \\ nil) do
+  def join_zone(zone_id, user_id, password \\ nil) do
     zone = get_simple_zone!(zone_id)
+    delete_participant_by_user_id(user_id)
     with {:ok, true} <- validate_password(zone,password) do
-      {:ok, %{zone: zone, user: Accounts.get_simple_user!(user)} |> create_participant }
+      return = {:ok, %{zone: zone, user: Accounts.get_simple_user!(user_id)} |> create_participant }
     else
       _ ->
         %{status: :bad_request, message: "Passwords don't match"}
     end
 
   end
+
+  def delete_participant_by_user_id(user_id) do
+    query = from p in Participant,
+      where: p.user_id == ^user_id,
+      select: p
+    p = Repo.all(query)
+    if p != nil do
+      Enum.each(p, fn(x) -> delete_participant(x) end ) 
+    end
+  end
+
   def get_participant_in_zone(zone_id) do
     Repo.get!(Zone, zone_id)
     |> Repo.preload(:participants)
