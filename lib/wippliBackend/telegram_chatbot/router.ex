@@ -41,6 +41,18 @@ defmodule TelegramBot.Router do
     end
   end
 
+  def generate_contact_matcher(handler) do
+    quote do
+      def do_match_message(%{
+            message: %{
+              contact: %{}
+            }
+                        } = var!(update)) do
+        handle_message unquote(handler), [var!(update)]
+      end
+    end
+  end
+
   defp generate_command(command, handler) do
     quote do
       def do_match_message(%{
@@ -137,6 +149,16 @@ defmodule TelegramBot.Router do
 
   defmacro message(module, function) do
     generate_message_matcher {module, function}
+  end
+
+  ##Contacts
+
+  defmacro contact(do: function) do
+    generate_contact_matcher(function)
+  end
+
+  defmacro contact(module, function) do
+    generate_contact_matcher {module, function}
   end
 
   ## Replies

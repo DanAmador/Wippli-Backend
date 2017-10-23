@@ -20,15 +20,15 @@ defmodule TelegramBot.FlowFsm do
 
 
   @possible_events %{
-    polling: [:goto_edit_info, :goto_zone_register],
+    polling: [:goto_ask_value, :goto_zone_register],
     zone_register: [:ev_join_zone],
     ask_password: [:ev_join_zone_with_pass],
-    edit_info: [:ev_update_user],
+    ask_value: [:ev_update_user],
     all: [:return_to_polling]
   }
 
   def new(telegram_id) do
-    %Fsm{state: :polling, data: get_user_info(telegram_id), events: @possible_events[:polling]}
+    %Fsm{state: :polling, data: get_user_info(telegram_id)}
   end
 
   def get_events_by_arity(arity) do
@@ -51,11 +51,10 @@ defmodule TelegramBot.FlowFsm do
   end
 
   def next_state(fsm, new_state) do
-    fsm2 = Map.put(fsm, :state, new_state)
-    fsm2
+    Map.put(fsm, :state, new_state)
   end
 
-  def next_state(fsm, new_state, {key, value}) do
+  def next_state(fsm, new_state, {key, value} = params) do
     Map.put(fsm, key, value) |> next_state(new_state)
   end
 
@@ -69,10 +68,6 @@ defmodule TelegramBot.FlowFsm do
   end
 
   #Polling state
-  def ev_edit_info(fsm, key) do
-    next_state(fsm, :ask_value, {:to_edit,  [{String.to_atom(key)}]})
-  end
-
   def goto_zone_register(fsm) do
     next_state(fsm, :zone_register)
   end
@@ -100,21 +95,17 @@ defmodule TelegramBot.FlowFsm do
 
   #All States, resets the fsm
   def return_to_polling(fsm) do
-    IO.inspect "returning to polling"
     fsm2 = new(fsm.data[:telegram_id])
     next_state(fsm2, :polling)
   end
 
 
   # Edit user info state
-  def ev_update_user(fsm, to_update, value) do
-    user = Accounts.get_or_create_user_by_telegram_id(fsm.data.telegram_id)
-    case to_update do
-      :nickname ->
-        Accounts.update_user(user, %{:nickname => value})
-        :phone ->
-        #TODO use telegram to send phone
-        :ok
-    end
+  def goto_ask_value(fsm, to_edit) do
+    next_state(fsm, :ask_value, {:to_edit, to_edit})
+  end
+
+  def ev_update_user(fsm, to_edit) do
+    next_state(fsm, :polling, {:message,  String.capitalize(to_string(to_edit)) <> " correctly updated"})
   end
 end

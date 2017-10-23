@@ -41,8 +41,10 @@ defmodule TelegramBot.FsmServer do
   end
 
   defcall fsm, state: fsm, do: reply(fsm)
-  defcall events, state: fsm, do: reply(fsm.events)
-  defcall message, state: fsm, do: reply(fsm.message)
+  defcall to_edit, state: fsm, do: reply(fsm.to_edit)
+  defcall message(default), state: fsm, do:
+  reply(
+      if fsm.message != nil , do: fsm.message, else: default)
   defcall state, state: fsm, do: reply(fsm.state)
   defcall data, state: fsm, do: reply(fsm.data)
 end
