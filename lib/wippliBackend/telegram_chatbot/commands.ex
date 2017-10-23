@@ -3,62 +3,40 @@ defmodule TelegramBot.Commands do
   use TelegramBot.Commander
   alias TelegramBot.FsmServer
   alias TelegramBot.FlowFsm
-  #  alias TelegramBot.Commands.Outside
+  alias TelegramBot.Commands.Outside, as: Out
+  @moduledoc """
+  Provides routing for the Telegram bot using the outside module as a logic helper 
+  """
 
-  defp pid_from_id(id), do: id  |> FsmServer.pid_or_create
-  defp pid_from_update(%Model.Update{callback_query: callback}) when callback != nil, do: callback.from.id |> pid_from_id
-  defp pid_from_update(%Model.Update{message: message}), do: message.from.id |> pid_from_id
-
-  defp process_fsm_event( event, [pid | _] = params) do
-    possible_events = pid |> FsmServer.state |> FlowFsm.possible_events_from_state
-    if Enum.member?(possible_events, event) do
-      apply(FsmServer, event, params)
-      IO.inspect "new state: " <> to_string(FsmServer.state(pid))
-    end
-  end
-
-  defp update_zone(pid, data, update) do
-    if Integer.parse(data) != :error do
-      {zone_id, _ } = Integer.parse(data)
-      process_fsm_event(:ev_join_zone, [pid, zone_id])
-      Map.get(FsmServer.fsm(pid), :message, "Error getting zone")
-    else
-      "Please enter a valid zone"
-    end
-  end
-
-  defp join_zone(update, pid, pass) do
-    process_fsm_event(:ev_join_zone_with_pass, [pid,pass])
-    Map.get(FsmServer.fsm(pid), :message, "Error joining zone")
-  end
-
-  defp pid_and_state_from_update(update) do
-    pid = pid_from_update(update)
-    {pid, FsmServer.state(pid)}
-  end
-
-  defp advance_fsm(update, event) do
-    process_fsm_event(event, [ pid_from_update(update)])
-  end
-
-  defp advance_fsm(update, event, data) do
-    process_fsm_event(event, [pid_from_update(update), data])
-  end
-
-  def post_action(update, pid) do
-    fsm = FsmServer.fsm(pid)
-
-    case fsm.state do
-      :ask_password -> send_message "Enter password", reply_markup: %Model.ForceReply{force_reply: true}
-      _ -> :ok
-    end
-  end
+  @default_menu %Model.InlineKeyboardMarkup{
+    inline_keyboard: [
+      [
+        %{
+          callback_data: "/options join_zone",
+          text: "Zone",
+        },
+        %{
+          callback_data: "/options songs_in_zone",
+          text: "Playlist",
+        },
+        %{
+          callback_data: "/options request_song",
+          text: "Request",
+        },
+        %{
+          callback_data: "/options edit_info",
+          text: "Edit Info",
+        },
+      ],
+      []
+    ]
+  }
 
   callback_query_command "options" do
     Logger.log :info, "Callback Query Command /options"
     case update.callback_query.data do
       "/options join_zone" ->
-        advance_fsm(update, :goto_zone_register)
+        Out.advance_fsm(update, :goto_zone_register)
         send_message "What's the zone id? ", reply_markup: %Model.ForceReply{force_reply: true}
       "/options songs_in_zone" ->
         answer_callback_query text: "TODO SHOW SONGS IN ZONE"
@@ -70,14 +48,14 @@ defmodule TelegramBot.Commands do
   end
 
   reply do
-    {pid, state} = pid_and_state_from_update(update)
+    {pid, state} = Out.pid_and_state_from_update(update)
     text = update.message.text
     case  state do
       :zone_register ->
-        update_zone(pid, text, update) |> send_message
-        post_action(update, pid)
+        Out.update_zone(pid, text, update) |> send_message
+        Out.post_action(update, pid)
       :ask_password ->
-        join_zone(update, pid, text) |> send_message
+        Out.join_zone(update, pid, text) |> send_message
       _ -> send_message "not doing anything?"
     end
   end
@@ -85,33 +63,14 @@ defmodule TelegramBot.Commands do
 
   message do
     Logger.log :warn, "Did not match the message"
-    {_, state} = pid_and_state_from_update(update)
+    {pid, state} = Out.pid_and_state_from_update(update)
     send_message to_string(state)
     case  state do
-        _-> send_message "What do you want to do?",
-      reply_markup: %Model.InlineKeyboardMarkup{
-        inline_keyboard: [
-          [
-            %{
-              callback_data: "/options join_zone",
-              text: "Zone",
-            },
-            %{
-              callback_data: "/options songs_in_zone",
-              text: "Playlist",
-            },
-            %{
-              callback_data: "/options request_song",
-              text: "Request",
-            },
-            %{
-              callback_data: "/options edit_info",
-              text: "Edit Info",
-            },
-          ],
-          []
-        ]
-}
+      :zone_register ->
+        Out.update_zone(pid, update.message.text, update) |> send_message
+        Out.post_action(update, pid)
+      _-> send_message "What do you want to do?",
+      reply_markup: @default_menu
     end
   end
 end

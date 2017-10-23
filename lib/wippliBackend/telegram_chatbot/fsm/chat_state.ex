@@ -4,7 +4,8 @@ defmodule TelegramBot.FlowFsm do
   alias TelegramBot.Cache
   alias WippliBackend.Wippli.Zone
   alias TelegramBot.Fsm
-  #alias WippliBackend.Accounts
+  alias WippliBackend.Accounts
+
   # Function purgatory
   #  defstate ask_value do
   #    defevent update_db(value), data: data do
@@ -19,10 +20,10 @@ defmodule TelegramBot.FlowFsm do
 
 
   @possible_events %{
-    polling: [:ev_edit_info, :goto_zone_register],
+    polling: [:goto_edit_info, :goto_zone_register],
     zone_register: [:ev_join_zone],
     ask_password: [:ev_join_zone_with_pass],
-    ask_value: [:ev_update_db],
+    edit_info: [:ev_update_user],
     all: [:return_to_polling]
   }
 
@@ -99,7 +100,21 @@ defmodule TelegramBot.FlowFsm do
 
   #All States, resets the fsm
   def return_to_polling(fsm) do
+    IO.inspect "returning to polling"
     fsm2 = new(fsm.data[:telegram_id])
     next_state(fsm2, :polling)
+  end
+
+
+  # Edit user info state
+  def ev_update_user(fsm, to_update, value) do
+    user = Accounts.get_or_create_user_by_telegram_id(fsm.data.telegram_id)
+    case to_update do
+      :nickname ->
+        Accounts.update_user(user, %{:nickname => value})
+        :phone ->
+        #TODO use telegram to send phone
+        :ok
+    end
   end
 end
