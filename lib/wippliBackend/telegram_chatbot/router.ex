@@ -1,7 +1,7 @@
 defmodule TelegramBot.Router do
   @bot_name Application.get_env(:wippliBackend, :bot_name)
   # Code injectors
-
+alias TelegramBot.FsmServer
   defmacro __using__(_opts) do
     quote do
       require Logger
@@ -118,6 +118,8 @@ defmodule TelegramBot.Router do
     quote do
       def do_match_message(%{callback_query: callback_query} = var!(update))
       when not is_nil(callback_query) do
+        IO.inspect callback_query
+        callback_query.from.id |> FsmServer.pid_or_create
         handle_message unquote(handler), [var!(update)]
       end
     end

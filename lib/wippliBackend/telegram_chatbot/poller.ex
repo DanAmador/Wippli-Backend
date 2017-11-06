@@ -1,7 +1,6 @@
 defmodule TelegramBot.Poller do
   use GenServer
   require Logger
-
   # Server
 
   def start_link do

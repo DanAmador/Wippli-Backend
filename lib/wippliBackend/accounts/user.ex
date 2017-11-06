@@ -8,10 +8,12 @@ defmodule WippliBackend.Accounts.User do
     field :phone, :string
     field :telegram_id, :integer
     field :nickname, :string
-    has_many :zones, WippliBackend.Wippli.Zone, foreign_key: :created_by
+
+    has_one :zones, WippliBackend.Wippli.Zone, foreign_key: :created_by
+    has_one :participants, WippliBackend.Wippli.Participant
+
     has_many :requests, WippliBackend.Wippli.Request, foreign_key: :requested_by
     has_many :votes, WippliBackend.Wippli.Vote, foreign_key: :voted_by
-    has_one :participants, WippliBackend.Wippli.Participant
     timestamps()
   end
 
