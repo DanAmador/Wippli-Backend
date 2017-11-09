@@ -10,5 +10,6 @@ defmodule WippliBackend.Repo.Migrations.CreateSongs do
       timestamps()
     end
 
+    create unique_index(:songs, :url, name: :unique_url)
   end
 end

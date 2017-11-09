@@ -20,7 +20,7 @@ defmodule WippliBackend.Wippli do
     zone = get_simple_zone!(zone_id)
     delete_participant_by_user_id(user_id)
     with {:ok, true} <- validate_password(zone,password) do
-      return = {:ok, %{zone: zone, user: Accounts.get_simple_user!(user_id)} |> create_participant }
+      {:ok, %{zone: zone, user: Accounts.get_simple_user!(user_id)} |> create_participant }
     else
       _ ->
         %{status: :bad_request, message: "Passwords don't match"}
@@ -123,7 +123,7 @@ defmodule WippliBackend.Wippli do
     Repo.get_by(Vote, [request_id: request_id, voted_by: user_id])
   end
 
-  def create_or_update_vote(request_id, user_id, rating) do
+  def create_or_update_vote(request_id, user_id, rating \\ nil) do
     case rating   do
       nil -> create_or_update_vote(request_id, user_id, 0 )
       _ ->
@@ -187,13 +187,8 @@ defmodule WippliBackend.Wippli do
 
   def create_song(attrs) do
     if attrs != {:error, :bad_request} do
-      song = %Song{}
+      %Song{}
       |> Song.changeset(attrs)
-
-      song
-      |> Repo.insert()
-
-      song
     else
       {:error, :bad_request}
     end
@@ -219,6 +214,18 @@ defmodule WippliBackend.Wippli do
   alias WippliBackend.Wippli.Request
   alias WippliBackend.Wippli.RequestHelper
 
+  def get_requests_in_zone(zone_id, max_played) do
+    query = from request in Request,
+      where: request.zone_id == ^zone_id and request.times_played <= ^max_played,
+      preload: [:song,:votes],
+      order_by:  [asc: request.times_played, desc: request.inserted_at]
+
+    Repo.all(query)
+    |> Enum.map(fn(x) -> %{title: x.song.title, url: x.song.url, request_id: x.id,
+                          thumbnail: x.song.thumbnail, rating: x.votes |> Enum.reduce(0,
+                            fn(x, acc) -> x.rating + acc end )} end)
+  end
+
   def get_simple_request(id) do
     Repo.get(Request, id)
   end
@@ -240,7 +247,7 @@ defmodule WippliBackend.Wippli do
   end
 
   def create_request(user_id, zone_id, song_url) do
-    with {:ok, %Song{} = song } <- get_song!(song_url) do
+    with {:ok, %Song{} = song } <- get_song!(RequestHelper.parse_url(song_url).url) do
       create_request_from_song(song, user_id, zone_id)
     else
       {:ok, nil} -> RequestHelper.parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)

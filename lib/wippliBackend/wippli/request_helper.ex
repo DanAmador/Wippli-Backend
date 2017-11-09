@@ -1,5 +1,6 @@
 defmodule WippliBackend.Wippli.RequestHelper do
   alias WippliBackend.Wippli.RequestHelper.YouTubePoison
+
   def parse_url(song_url) do
     uri_struct = URI.parse(song_url)
     case uri_struct.host do

@@ -5,6 +5,7 @@ defmodule WippliBackend.Wippli.Request do
 
 
   schema "requests" do
+    field :times_played, :integer
     belongs_to :user, WippliBackend.Accounts.User, foreign_key: :requested_by
     belongs_to :zone, WippliBackend.Wippli.Zone
     belongs_to :song, WippliBackend.Wippli.Song

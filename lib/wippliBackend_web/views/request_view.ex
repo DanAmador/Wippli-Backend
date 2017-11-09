@@ -14,7 +14,8 @@ defmodule WippliBackendWeb.RequestView do
   def render("request.json", %{request: request}) do
     %{
       id: request.id,
-      song: render_one(request.song, SongView, "plain_song.json")
+      song: render_one(request.song, SongView, "plain_song.json"),
+      times_played: request.times_played
     }
   end
 end
