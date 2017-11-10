@@ -3,6 +3,9 @@ defmodule TelegramBot.Commands do
   use TelegramBot.Commander
   alias TelegramBot.FsmServer
   alias TelegramBot.Commands.Outside, as: Out
+  alias WippliBackend.Accounts
+  alias WippliBackend.Accounts.User
+  alias WippliBackend.Wippli.Participant
   @moduledoc """
   Provides routing for the Telegram bot using the outside module as a logic helper 
   """
@@ -49,6 +52,17 @@ defmodule TelegramBot.Commands do
     ]
   }
 
+  callback_query_command "song" do
+    Logger.log :info, "Callback Query Command /song"
+    [scope, command, zone_id_string] = String.split(update.callback_query.data)
+    zone_id = zone_id_string |> String.to_integer
+    case Enum.join([scope, command], " ")   do
+      "/song all" ->
+        Wippli.get_requests_in_zone(zone_id, true)
+      "/song unplayed" ->
+        Wippli.get_requests_in_zone(zone_id, false)
+    end
+  end
 
   callback_query_command "edit" do
     Logger.log :info, "Callback Query Command /edit"
@@ -78,9 +92,33 @@ defmodule TelegramBot.Commands do
     case update.callback_query.data do
       "/options join_zone" ->
         Out.advance_fsm(update, :goto_zone_register)
-        send_message "What's the zone id? ", reply_markup: %Model.ForceReply{force_reply: true}
         answer_callback_query text: "Joining zone"
+        send_message "What's the zone id? ", reply_markup: %Model.ForceReply{force_reply: true}
       "/options songs_in_zone" ->
+        with %User{participants: %Participant{} = participant }  <- Accounts.get_simple_user_by_telegram_id(update.callback_query.from.id) do
+#TODO add zone id to callback data and send messages with rating possibility
+          send_message("Which songs do you wish to see?", reply_markup:%Model.InlineKeyboardMarkup{
+                inline_keyboard: [
+                  [
+                    %{
+                      callback_data: "/song all",
+                      text: "All",
+                    },
+                    %{
+                      callback_data: "/song unplayed",
+                      text: "Unplayed",
+                    },
+
+                  ],
+                  []
+                ]
+}
+
+)
+        else
+          _ ->
+          send_message "Currently not in zone"
+        end
         answer_callback_query text: "TODO SHOW SONGS IN ZONE"
       "/options request_song" ->
         answer_callback_query text: "TODO request song query"

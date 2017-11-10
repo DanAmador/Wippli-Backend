@@ -31,7 +31,9 @@ defmodule WippliBackend.Accounts do
 
   def get_simple_user_by_telegram_id(telegram_id) do
     Repo.get_by(User, [telegram_id: telegram_id])
+    |> Repo.preload([:zones, :participants])
   end
+
 
   def get_user!(id) do
     Repo.get!(User, id)

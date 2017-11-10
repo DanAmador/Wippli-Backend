@@ -214,11 +214,13 @@ defmodule WippliBackend.Wippli do
   alias WippliBackend.Wippli.Request
   alias WippliBackend.Wippli.RequestHelper
 
-  def get_requests_in_zone(zone_id, max_played) do
+
+
+  def get_requests_in_zone(zone_id, played) do
     query = from request in Request,
-      where: request.zone_id == ^zone_id and request.times_played <= ^max_played,
+      where: request.zone_id == ^zone_id and request.played == ^played,
       preload: [:song,:votes],
-      order_by:  [asc: request.times_played, desc: request.inserted_at]
+      order_by:  [ desc: request.inserted_at]
 
     Repo.all(query)
     |> Enum.map(fn(x) -> %{title: x.song.title, url: x.song.url, request_id: x.id,
