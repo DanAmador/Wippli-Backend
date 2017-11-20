@@ -58,6 +58,10 @@ defmodule TelegramBot.FlowFsm do
     Map.put(fsm, key, value) |> next_state(new_state)
   end
 
+  def next_state(fsm, new_state, params) do
+      Map.merge(fsm, params) |> next_state(new_state)
+  end
+
   defp join_zone_db(zone_id, user_id, password) do
     with {:ok, %Participant{}} <- Wippli.join_zone(zone_id,user_id, password) do
       {:message, "Successfully joined zone " <> to_string(zone_id)}
@@ -77,7 +81,7 @@ defmodule TelegramBot.FlowFsm do
       if zone.password == nil do
         next_state(fsm, :polling, join_zone_db(zone_id, fsm.data[:db_id], nil))
       else
-        next_state(fsm, :ask_password, {:to_edit, zone_id})
+        next_state(fsm, :ask_password, %{to_edit: zone_id, message: "This zone has a password!"})
       end
     else
       _ ->
