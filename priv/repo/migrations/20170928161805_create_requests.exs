@@ -3,7 +3,7 @@ defmodule WippliBackend.Repo.Migrations.CreateRequests do
 
   def change do
     create table(:requests) do
-      add :times_played, :boolean, default: false
+      add :times_played, :integer, default: 0
 
       add :requested_by, references(:users)
      # add :vote_id, references(:votes)
