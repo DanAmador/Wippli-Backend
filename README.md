@@ -21,7 +21,7 @@
 
 # Song Requests  
     Required: user_id, song_url 
-    POST    /api/zones/:zone_id/requests 
+    POST    /api/zones/requests 
     
 # Votes
     Required: request_id, user_id, rating (integer)

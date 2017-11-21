@@ -15,7 +15,7 @@ defmodule WippliBackendWeb.Router do
       resources "/participants/:user_id", ParticipantController, only: [:create, :delete]
     end
 
-    resources "/zones/:zone_id/requests/", RequestController, only: [:create]
+    resources "/requests/", RequestController, only: [:create]
     resources "/requests/:request_id", VoteController, only: [:create]
   end
 end
