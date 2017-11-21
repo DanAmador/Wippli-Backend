@@ -4,6 +4,7 @@ defmodule TelegramBot.Commands do
   alias TelegramBot.FsmServer
   alias TelegramBot.Commands.Outside, as: Out
   alias WippliBackend.Accounts
+  alias WippliBackend.Wippli
   alias WippliBackend.Accounts.User
   alias WippliBackend.Wippli.Participant
   @moduledoc """
@@ -52,15 +53,30 @@ defmodule TelegramBot.Commands do
     ]
   }
 
+
+  callback_query_command "vote" do
+    Logger.log :info, "Callback Query Command /vote"
+    [scope, command, request_id, user_id] = String.split(update.callback_query.data)
+    case Enum.join([scope, command], " ")   do
+      "/vote true" ->
+        Wippli.create_or_update_vote(request_id, user_id, 1)
+        answer_callback_query text: "Vote sent!"
+
+      "/vote false" ->
+        Wippli.create_or_update_vote(request_id, user_id, -1)
+        answer_callback_query text: "Veto sent!"
+    end
+  end
+
   callback_query_command "song" do
     Logger.log :info, "Callback Query Command /song"
-    [scope, command, zone_id_string] = String.split(update.callback_query.data)
+    [scope, command, zone_id_string, user_id] = String.split(update.callback_query.data)
     zone_id = zone_id_string |> String.to_integer
     case Enum.join([scope, command], " ")   do
       "/song all" ->
-        Wippli.get_requests_in_zone(zone_id, true)
+        Wippli.get_requests_in_zone(zone_id, 100) |> Out.format_songs(update, user_id)
       "/song unplayed" ->
-        Wippli.get_requests_in_zone(zone_id, false)
+        Wippli.get_requests_in_zone(zone_id, 0) |> Out.format_songs(update, user_id)
     end
   end
 
@@ -82,7 +98,7 @@ defmodule TelegramBot.Commands do
             ],
           ],
           one_time_keyboard: true
-}
+        }
     end
     answer_callback_query text: "Choose what to edit"
   end
@@ -96,16 +112,15 @@ defmodule TelegramBot.Commands do
         send_message "What's the zone id? ", reply_markup: %Model.ForceReply{force_reply: true}
       "/options songs_in_zone" ->
         with %User{participants: %Participant{} = participant }  <- Accounts.get_simple_user_by_telegram_id(update.callback_query.from.id) do
-#TODO add zone id to callback data and send messages with rating possibility
-          send_message("Which songs do you wish to see?", reply_markup:%Model.InlineKeyboardMarkup{
+          send_message("Which songs do you wish to see?", reply_markup: %Model.InlineKeyboardMarkup{
                 inline_keyboard: [
                   [
                     %{
-                      callback_data: "/song all",
+                      callback_data: "/song all #{to_string(participant.zone_id)} #{to_string(participant.user_id)}" ,
                       text: "All",
                     },
                     %{
-                      callback_data: "/song unplayed",
+                      callback_data: "/song unplayed #{to_string(participant.zone_id)} #{to_string(participant.user_id)}",
                       text: "Unplayed",
                     },
 
@@ -114,12 +129,11 @@ defmodule TelegramBot.Commands do
                 ]
 }
 
-)
+          )
         else
           _ ->
           send_message "Currently not in zone"
         end
-        answer_callback_query text: "TODO SHOW SONGS IN ZONE"
       "/options request_song" ->
         answer_callback_query text: "TODO request song query"
       "/options edit_info" ->

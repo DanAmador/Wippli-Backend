@@ -24,6 +24,7 @@ defmodule TelegramBot.Commands.Outside do
     if Integer.parse(data) != :error do
       {zone_id, _ } = Integer.parse(data)
       process_fsm_event(:ev_join_zone, [pid, zone_id])
+
       FsmServer.message(pid, "Error finding zone")
     else
       process_fsm_event(:return_to_polling, [pid])
@@ -75,5 +76,35 @@ defmodule TelegramBot.Commands.Outside do
 
   def return_to_polling(pid) do
     process_fsm_event(:return_to_polling, [pid])
+  end
+
+  # Playlist logic
+
+  def format_songs(request_list, update, user_id) do
+    send_message "Displaying #{length(request_list)} songs"
+    Enum.each(request_list, fn (request) ->
+      message = """
+      <pre>Rating: #{request.rating}</pre>
+      <a href="#{request.url}">#{request.title}</a>
+      """
+      send_message(message,
+       parse_mode: "html",
+        reply_markup: %Model.InlineKeyboardMarkup{
+          inline_keyboard: [
+            [
+                %{
+                  callback_data: "/vote true #{to_string(request.id)} #{to_string(user_id)}",
+                  text: "👍",
+                },
+                %{
+                  callback_data: "/vote false #{to_string(request.id)} #{to_string(user_id)}",
+                  text: "👎",
+                },
+
+              ],
+              []
+            ]}
+      )
+    end)
   end
 end
