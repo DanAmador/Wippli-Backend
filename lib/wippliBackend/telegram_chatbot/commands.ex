@@ -7,6 +7,7 @@ defmodule TelegramBot.Commands do
   alias WippliBackend.Wippli
   alias WippliBackend.Accounts.User
   alias WippliBackend.Wippli.Participant
+  alias WippliBackend.Wippli.Request
   alias WippliBackend.Wippli.RequestHelper
 
   @moduledoc """
@@ -175,9 +176,10 @@ defmodule TelegramBot.Commands do
         case RequestHelper.valid_url(url) do
           {:ok, _ } ->
             data = FsmServer.data(pid)
-            case Wippli.create_request(data[:db_id], url) do
-              {:ok, request} -> send_message "Successfully added <i>#{request.song.title}</i>  to current zone", parse_mode: "html"
-              _ -> send_message "Try with a different song!"
+            with {:ok, %Request{} = request} <- Wippli.create_request(data[:db_id], url) do
+              send_message "Successfully added <i>#{request.song.title}</i>  to current zone", parse_mode: "html"
+            else
+              _ -> send_message "Song already requested, added vote!"
             end
           _ -> send_message "What do you want to do?",
           reply_markup: @default_menu

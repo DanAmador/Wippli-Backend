@@ -249,14 +249,10 @@ defmodule WippliBackend.Wippli do
       participant = get_participant_by_user_id(user_id)
       request = get_request_by_source_id(song.source_id, participant.zone.id)
       if request == nil do
-      IO.inspect "Request doesn't exist yet"
       %Request{}
       |> Request.changeset(%{song: song, user: participant.user, zone: participant.zone})
       |> Repo.insert
       else
-
-        IO.inspect "casting vote on said request"
-        IO.inspect request
         create_or_update_vote(request.id, user_id, 1)
       end
     else
