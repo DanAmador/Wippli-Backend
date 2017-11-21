@@ -123,22 +123,18 @@ defmodule WippliBackend.Wippli do
     Repo.get_by(Vote, [request_id: request_id, voted_by: user_id])
   end
 
-  def create_or_update_vote(request_id, user_id, rating \\ nil) do
-    case rating   do
-      nil -> create_or_update_vote(request_id, user_id, 0 )
-      _ ->
-        with %Vote{} = vote <- get_vote_by_user_for_request!(request_id, user_id) do
-            vote
-            |>  Vote.update_set(%{rating: rating})
-            |> Repo.update!
-          {:ok, :accepted}
-        else
-          nil ->
-            %Vote{}
-            |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
-            |> Repo.insert()
-          {:ok, :created}
-        end
+  def create_or_update_vote(request_id, user_id, rating \\ 0) do
+    with %Vote{} = vote <- get_vote_by_user_for_request!(request_id, user_id) do
+      vote
+      |> Vote.update_set(%{rating: rating})
+      |> Repo.update!
+      {:ok, :accepted}
+    else
+      nil ->
+        %Vote{}
+        |> Vote.changeset(%{rating: rating, user: Accounts.get_simple_user!(user_id), request: get_simple_request(request_id)})
+        |> Repo.insert
+      {:ok, :created}
     end
   end
 
@@ -158,7 +154,7 @@ defmodule WippliBackend.Wippli do
     Repo.all(Participant)
   end
 
-  def get_participant!(id), do: Repo.get!(Participant, id)
+  def get_participant_by_user_id(id), do: Repo.get_by(Participant, [user_id: id]) |> Repo.preload([:zone, :user])
 
   def update_participant(%Participant{} = participant, attrs) do
     participant
@@ -187,8 +183,11 @@ defmodule WippliBackend.Wippli do
 
   def create_song(attrs) do
     if attrs != {:error, :bad_request} do
-      %Song{}
+      {:ok, song } = %Song{}
       |> Song.changeset(attrs)
+      |> Repo.insert
+
+      song
     else
       {:error, :bad_request}
     end
@@ -236,11 +235,30 @@ defmodule WippliBackend.Wippli do
     Repo.all(Request)
   end
 
-  defp create_request_from_song(song, user_id, zone_id) do
+  def get_request_by_source_id(source_id, zone_id) do
+    query = from r in Request,
+      join: s in assoc(r, :song),
+      where: s.source_id == ^source_id and r.zone_id == ^zone_id,
+      select: r,
+      preload: [song: s]
+    Repo.one(query)
+  end
+
+  defp create_request_from_song(song, user_id) do
     if song != {:error, :bad_request} do
+      participant = get_participant_by_user_id(user_id)
+      request = get_request_by_source_id(song.source_id, participant.zone.id)
+      if request == nil do
+      IO.inspect "Request doesn't exist yet"
       %Request{}
-      |> Request.changeset(%{song: song, user: Accounts.get_simple_user!(user_id), zone: get_simple_zone!(zone_id)})
+      |> Request.changeset(%{song: song, user: participant.user, zone: participant.zone})
       |> Repo.insert
+      else
+
+        IO.inspect "casting vote on said request"
+        IO.inspect request
+        create_or_update_vote(request.id, user_id, 1)
+      end
     else
       {
         :error, :bad_request
@@ -248,12 +266,11 @@ defmodule WippliBackend.Wippli do
     end
   end
 
-
-  def create_request(user_id, zone_id, song_url) do
+  def create_request(user_id, song_url) do
     with {:ok, %Song{} = song } <- get_song!(RequestHelper.parse_url(song_url).url) do
-      create_request_from_song(song, user_id, zone_id)
+      create_request_from_song(song, user_id)
     else
-      {:ok, nil} -> RequestHelper.parse_url(song_url) |> create_song |> create_request_from_song(user_id, zone_id)
+      {:ok, nil} -> RequestHelper.parse_url(song_url) |> create_song |> create_request_from_song(user_id)
     {:error, :bad_request} -> %{status: :bad_request, message: "URL #{song_url} doesn't match any service"}
     end
   end

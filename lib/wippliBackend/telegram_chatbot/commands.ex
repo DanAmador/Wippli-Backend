@@ -136,8 +136,6 @@ defmodule TelegramBot.Commands do
           _ ->
           send_message "Currently not in zone"
         end
-      "/options request_song" ->
-        answer_callback_query text: "TODO request song query"
       "/options edit_info" ->
         send_message "What do you want to edit?", reply_markup: @options_menu
         answer_callback_query text: "Edit Info"
@@ -175,15 +173,11 @@ defmodule TelegramBot.Commands do
       :polling ->
         url = update.message.text
         case RequestHelper.valid_url(url) do
-          {:ok, _ } -> 
+          {:ok, _ } ->
             data = FsmServer.data(pid)
-            case FsmServer.zone(pid) do
-              zone_id when zone_id != nil ->
-                {:ok, request} = Wippli.create_request(data[:db_id],zone_id, url)
-                send_message "#{request.song.title} added to zone # #{zone_id}"
-              _ ->
-                IO.inspect "hai "
-                #Wippli.create_request_without_zone(data[:db_id], url)
+            case Wippli.create_request(data[:db_id], url) do
+              {:ok, request} -> send_message "Successfully added <i>#{request.song.title}</i>  to current zone", parse_mode: "html"
+              _ -> send_message "Try with a different song!"
             end
           _ -> send_message "What do you want to do?",
           reply_markup: @default_menu
