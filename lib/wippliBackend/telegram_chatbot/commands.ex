@@ -7,6 +7,8 @@ defmodule TelegramBot.Commands do
   alias WippliBackend.Wippli
   alias WippliBackend.Accounts.User
   alias WippliBackend.Wippli.Participant
+  alias WippliBackend.Wippli.RequestHelper
+
   @moduledoc """
   Provides routing for the Telegram bot using the outside module as a logic helper 
   """
@@ -170,10 +172,24 @@ defmodule TelegramBot.Commands do
     {pid, state} = Out.pid_and_state_from_update(update)
     send_message to_string(state)
     case  state do
-      :polling -> send_message "What do you want to do?",
-      reply_markup: @default_menu
+      :polling ->
+        url = update.message.text
+        case RequestHelper.valid_url(url) do
+          {:ok, _ } -> 
+            data = FsmServer.data(pid)
+            case FsmServer.zone(pid) do
+              zone_id when zone_id != nil ->
+                {:ok, request} = Wippli.create_request(data[:db_id],zone_id, url)
+                send_message "#{request.song.title} added to zone # #{zone_id}"
+              _ ->
+                IO.inspect "hai "
+                #Wippli.create_request_without_zone(data[:db_id], url)
+            end
+          _ -> send_message "What do you want to do?",
+          reply_markup: @default_menu
+        end
       _ ->
-          Out.return_to_polling(pid)
+        Out.return_to_polling(pid)
     end
   end
 end

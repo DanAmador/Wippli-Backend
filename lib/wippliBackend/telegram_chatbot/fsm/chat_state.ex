@@ -64,7 +64,7 @@ defmodule TelegramBot.FlowFsm do
 
   defp join_zone_db(zone_id, user_id, password) do
     with {:ok, %Participant{}} <- Wippli.join_zone(zone_id,user_id, password) do
-      {:message, "Successfully joined zone " <> to_string(zone_id)}
+      %{message: "Successfully joined zone #{to_string(zone_id)}", zone: zone_id}
     else
       _ ->
         {:message,"Error while trying to join zone"}

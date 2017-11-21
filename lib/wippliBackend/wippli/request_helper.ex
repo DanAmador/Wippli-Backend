@@ -1,6 +1,14 @@
 defmodule WippliBackend.Wippli.RequestHelper do
   alias WippliBackend.Wippli.RequestHelper.YouTubePoison
 
+  def valid_url(url) do
+    case URI.parse(url) do
+      %URI{scheme: nil} -> {:error, "No scheme"}
+      %URI{host: nil} -> {:error, "No host"}
+      _ -> {:ok, url}
+    end
+  end
+
   def parse_url(song_url) do
     uri_struct = URI.parse(song_url)
     case uri_struct.host do

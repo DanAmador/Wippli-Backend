@@ -45,4 +45,5 @@ defmodule TelegramBot.FsmServer do
   defcall message(default), state: fsm, do: reply(if fsm.message != nil , do: fsm.message, else: default)
   defcall state, state: fsm, do: reply(fsm.state)
   defcall data, state: fsm, do: reply(fsm.data)
+  defcall zone, state: fsm, do: reply(fsm.zone)
 end
